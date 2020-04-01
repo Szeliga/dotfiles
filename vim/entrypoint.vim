@@ -1,6 +1,6 @@
 "" DEPENDENCIES
 "
-" * vim 8+ or neovim (will work with either one, but there are additional features for neovim)
+" * neovim
 " * fzf
 " * ripgrep
 " * bat
