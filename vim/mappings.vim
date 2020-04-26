@@ -30,13 +30,13 @@ noremap <silent> <C-p> :Files<CR>
 nnoremap <silent> <space> :nohlsearch<cr>
 
 """" Copy current file path to system pasteboard
-map <silent> <leader>C :let @* = expand("%")<CR>:echo "Copied: ".expand("%")<CR>
+map <silent> <leader>C :let @+ = expand("%")<CR>:echo "Copied: ".expand("%")<CR>
 
 """" Make Y consistent with D and C
 map Y y$
 
 """" Mapping for folding RSpec it blocks
-noremap <silent> <leader>f :normal zE<CR>:g/it "/normal jzfii<CR>
+noremap <silent> <leader>f :normal zE<CR>:g/test "/normal jzfii<CR>
 
 """" Git mappings
 map <silent> <leader>b :Gblame<CR>

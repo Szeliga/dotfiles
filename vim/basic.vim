@@ -21,7 +21,7 @@ set noshowmode
 set switchbuf=newtab
 
 """" Make yank use the system clipboard
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 """" Make redrawing and typing more performant
 set lazyredraw
@@ -32,7 +32,7 @@ set autoindent
 set copyindent
 
 """" Draw column count line
-set colorcolumn=100
+set colorcolumn=120
 
 """" Display relative line numbers
 set relativenumber
@@ -80,4 +80,3 @@ function! StripTrailingWhitespace()
   call setpos('.', save_cursor)
 endfunction
 autocmd BufWritePre *.* call StripTrailingWhitespace()
-

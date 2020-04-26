@@ -1,0 +1,31 @@
+set line-graphics = utf-8
+
+# set reference-format = [tag] <tracked-remote> hide:remote hide:branch
+set reference-format = [tag] <tracked-remote>
+set refresh-mode = periodic
+set refresh-interval = 5
+
+# ====== Generic ========
+
+bind status D !@?rm %(file)
+bind generic B @sh -c "xdg-open 'https://'$(git remote -v | grep -Eo 'github.com[:/][^.]+' | head -1 | tr : /)'/commit/%(commit)'"
+
+# ====== Stash view =====
+
+bind stash a ?git stash apply %(stash)
+
+# ====== Status view =====
+
+bind status a !?git commit --amend --no-edit
+bind status S !?git stash save --include-untracked --keep-index "%(prompt Stash message: )"
+bind status <Esc>c @sh -c "echo %(file) | pbcopy"
+
+
+# ====== Main view =====
+
+bind main B !git rebase -i %(commit)
+bind main T !@git tag %(prompt) %(commit)
+bind main ! !git revert %(commit)
+
+# ==== Refs view =====
+bind refs n !@git checkout -b "%(prompt Enter branch name: )"

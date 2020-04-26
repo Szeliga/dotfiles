@@ -25,3 +25,7 @@ endfunction
 inoremap <silent><expr> <c-space> coc#refresh()
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
                                            \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+
+"""" Disable automatic new line at end of file for encoded rails credentials
+autocmd BufRead,BufNewFile   *.yml.enc set nofixeol

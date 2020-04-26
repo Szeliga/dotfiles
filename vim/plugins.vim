@@ -20,6 +20,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 """" Presentation plugins
 Plug 'Rigellute/rigel'
+Plug 'dylanaraps/wal.vim'
 Plug 'ryanoasis/vim-devicons'
 
 """" Text objects plugins

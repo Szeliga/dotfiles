@@ -1,0 +1,55 @@
+[user]
+  name = Szymon Szeliga
+  email = szeliga.szymon@gmail.com
+  config = szeliga.szymon@gmail.com
+  ; signingkey = 19AD8F759A86D262
+[alias]
+  lg = log --all --pretty=format:'%Cred%h%Creset - %C(yellow)%ae%Creset - %Cgreen%cd%Creset - %s%Creset' --abbrev-commit --date=iso
+  cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|production\\|develop' | xargs -n 1 git branch -d"
+  co = checkout
+  cob = checkout -b
+  to-deploy = log --pretty=format:'%Cred%h%Creset - %C(yellow)%ae%Creset - %Cgreen%cd%Creset - %s%Creset' --abbrev-commit --date=iso origin/master..master
+[core]
+  autocrlf = input
+  excludesfile = ~/.gitignore
+  editor = nvim
+[commit]
+  gpgSign = false
+[merge]
+  conflictstyle = diff3
+  ff = only
+  tool = vimdiff
+[diff]
+  tool = vimdiff
+[difftool]
+  prompt = false
+[mergetool]
+  prompt = false
+[merge "railsschema"]
+  name = newer Rails schema version
+  driver = "ruby -e '\n\
+    system %(git), %(merge-file), %(--marker-size=%L), %(%A), %(%O), %(%B)\n\
+    b = File.read(%(%A))\n\
+    b.sub!(/^<+ .*\\nActiveRecord::Schema\\.define.:version => (\\d+). do\\n=+\\nActiveRecord::Schema\\.define.:version => (\\d+). do\\n>+ .*/) do\n\
+    %(ActiveRecord::Schema.define(:version => #{[$1, $2].max}) do)\n\
+    end\n\
+    File.open(%(%A), %(w)) {|f| f.write(b)}\n\
+    exit 1 if b.include?(%(<)*%L)'"
+[branch]
+  autosetuprebase = always
+[status]
+  showUntrackedFiles = all
+[push]
+  default = simple
+[filter "hawser"]
+  clean = git hawser clean %f
+  smudge = git hawser smudge %f
+  required = true
+[filter "lfs"]
+  clean = git-lfs clean %f
+  smudge = git-lfs smudge %f
+  required = true
+[gui]
+  recentrepo = /Users/Szymon/projects/lando
+[fetch]
+	prune = true
