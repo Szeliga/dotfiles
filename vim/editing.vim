@@ -12,7 +12,7 @@ let g:LanguageClient_serverCommands = {
     \ }
 
 """" coc.nvim config
-let g:coc_global_extensions = ['coc-solargraph']
+let g:coc_global_extensions = ['coc-solargraph', 'coc-json', 'coc-browser', 'coc-java', 'coc-ultisnips', 'coc-emmet']
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
@@ -29,3 +29,9 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
 
 """" Disable automatic new line at end of file for encoded rails credentials
 autocmd BufRead,BufNewFile   *.yml.enc set nofixeol
+autocmd BufRead,BufNewFile   spec/*.rb call SetTestsFolds()
+function SetTestsFolds()
+  set foldmethod=indent
+  set foldnestmax=6
+  set foldlevelstart=2
+endfunction

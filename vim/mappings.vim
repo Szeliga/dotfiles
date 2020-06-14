@@ -36,7 +36,7 @@ map <silent> <leader>C :let @+ = expand("%")<CR>:echo "Copied: ".expand("%")<CR>
 map Y y$
 
 """" Mapping for folding RSpec it blocks
-noremap <silent> <leader>f :normal zE<CR>:g/test "/normal jzfii<CR>
+" noremap <silent> <leader>f :normal zE<CR>:g/it "/normal jzfii<CR>
 
 """" Git mappings
 map <silent> <leader>b :Gblame<CR>
@@ -61,3 +61,4 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 nmap <leader>r <Plug>(coc-rename)
+nmap <leader>f  <Plug>(coc-fix)

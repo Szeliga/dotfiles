@@ -21,7 +21,7 @@ endsnippet
 
 snippet mod "module ... end"
 module ${1:`!p snip.rv = fileNameTitleized(snip)`}
-	$0
+	${0:${VISUAL:# body}}
 end
 endsnippet
 
@@ -29,18 +29,12 @@ snippet cla "class ... end"
 # frozen_string_literal: true
 
 class ${1:`!p snip.rv = fileNameTitleized(snip)`}
-	$0
+	${0:${VISUAL:# body}}
 end
 endsnippet
 
 snippet cn "Class name"
 `!p snip.rv = specFileNameTitleized(snip)`
-endsnippet
-
-snippet "\b(de)?f" "def <name>..." r
-def ${1:function_name}${2:(${3:*args})}
-	$0
-end
 endsnippet
 
 snippet rdes "rspec: describe class"
@@ -69,18 +63,20 @@ it "$1" do
 end
 endsnippet
 
-snippet fm "rspec: factory method"
-def $1
-  @$1 ||= create(:$1$0)
-end
+snippet subject "RSpec: subject(...) { ... }"
+subject(:$1) { $0 }
 endsnippet
 
-snippet fv "RSpec: Factory variable"
-${2:$1} = create(:$1$0)
+snippet dc "RSpec: described_class"
+described_class
 endsnippet
 
 snippet let "RSpec: let"
 let(:$1) { $0 }
+endsnippet
+
+snippet exp "RSpec: expect(...).to/not_to"
+expect($1).${2:not_}to $0
 endsnippet
 
 snippet rubocopdisable "rubocop disable"
@@ -118,3 +114,9 @@ snippet sql "<<~SQL"
 	$0
 SQL
 endsnippet
+
+snippet de "method"
+def $0
+end
+endsnippet
+
