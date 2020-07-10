@@ -1,6 +1,6 @@
 "" DEPENDENCIES
 "
-" * vim 8+ or neovim (will work with either one, but there are additional features for neovim)
+" * neovim
 " * fzf
 " * ripgrep
 " * bat
@@ -10,22 +10,22 @@
 " brew install fzf ripgrep bat neovim
 "
 "" PLUGINS
-source ~/.vim/plugins.vim
+runtime plugins.vim
 
 "" BASIC CONFIG
-source ~/.vim/basic.vim
+runtime basic.vim
 
 "" MAPPINGS
-source ~/.vim/mappings.vim
+runtime mappings.vim
 
 "" NAVIGATION
-source ~/.vim/navigation.vim
+runtime navigation.vim
 
 "" PRESENTATION
-source ~/.vim/presentation.vim
+runtime presentation.vim
 
 "" EDITING
-source ~/.vim/editing.vim
+runtime editing.vim
 
 "" NEOVIM
-source ~/.vim/neo.vim
+runtime neo.vim
