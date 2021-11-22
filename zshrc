@@ -13,13 +13,14 @@ export LC_MONETARY="pl_PL.UTF-8"
 export LC_NUMERIC="pl_PL.UTF-8"
 export LC_TIME="pl_PL.UTF-8"
 export LC_ALL="pl_PL.UTF-8"
+export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
 
 # Better searching in command mode
 bindkey -M vicmd '?' history-incremental-search-backward
 bindkey -M vicmd '/' history-incremental-search-forward
 
 # ENV vars
-export EDITOR=nvim
+export EDITOR="nvr --remote-silent"
 export GPG_TTY=$(tty)
 export GOPATH=$HOME/coding/go
 export FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/*' --smart-case"
@@ -27,8 +28,7 @@ export FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/*' --smart-case"
 
 # Effectively aliases
 alias eff='cd ~/coding/jagersoft/effectively'
-# Tiramizoo aliases
-alias trmz='cd ~/coding/tiramizoo && dc up -d && cd trmz'
+#
 # Rails aliases
 alias rs='bin/rails s'
 alias rc='bin/rails c'
@@ -106,6 +106,10 @@ function gimmeport() {
   lsof -n -i4TCP:$1 | grep LISTEN
 }
 
+function c() {
+  mkdir -p "$(dirname "$1")" && touch "$1"
+}
+
 source $ZSH/oh-my-zsh.sh
 
 if type brew &>/dev/null; then
@@ -122,15 +126,28 @@ function kubectl() {
     command kubectl "$@"
 }
 
+function workdays() {
+  LC_ALL=en ncal -h | grep -vE "^S|^ |^$" | sed "s/[[:alpha:]]//g" | fmt -w 1 | sort -n | wc -l
+}
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Node Version Manager
 eval "`fnm env --multi --shell=zsh`"
 
 # RVM
-export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin"
+export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin:$HOME/Library/Python/3.7/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
 # Setup colors
 (cat $HOME/.config/wpg/sequences > /dev/null 2>&1 &)
 $HOME/.config/wpg/wp_init.sh > /dev/null 2>&1
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/Users/szymonszeliga/.sdkman"
+[[ -s "/Users/szymonszeliga/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/szymonszeliga/.sdkman/bin/sdkman-init.sh"
+
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+
+export CDPATH="$CDPATH:$HOME/coding:$HOME/coding/codesono:$HOME/coding/codesono/apisono"

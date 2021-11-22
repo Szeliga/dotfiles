@@ -42,3 +42,4 @@ config/definitions.rb
 .solargraph.yml
 vendor/bundle
 .projections.json
+.ruby-gemset

@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
-Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'SirVer/ultisnips'
 Plug 'Yggdroot/indentLine'
 Plug 'itchyny/lightline.vim'
@@ -12,6 +13,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-projectionist'
+Plug 'tpope/vim-rails'
 Plug 'w0rp/ale'
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
@@ -23,6 +25,8 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'Rigellute/rigel'
 Plug 'dylanaraps/wal.vim'
 Plug 'ryanoasis/vim-devicons'
+Plug 'folke/zen-mode.nvim'
+Plug 'shaunsingh/nord.nvim'
 
 """" Text objects plugins
 Plug 'kana/vim-textobj-line'
