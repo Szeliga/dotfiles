@@ -42,4 +42,4 @@
 	prune = true
 
 [include]
-  path = ~/.config/dotfiles/extras/gitconfig
+  path = ~/.config/dotfiles/extras/git/config

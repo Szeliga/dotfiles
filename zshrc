@@ -10,8 +10,6 @@ export LC_NUMERIC="pl_PL.UTF-8"
 export LC_TIME="pl_PL.UTF-8"
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
 
-source $HOME/.qontorc
-
 # Better searching in command mode
 bindkey -M vicmd '?' history-incremental-search-backward
 bindkey -M vicmd '/' history-incremental-search-forward
@@ -141,3 +139,8 @@ export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin:$HOME/Library/Python/3.
 
 export CDPATH="$CDPATH:$HOME/coding:$HOME/coding/codesono:$HOME/coding/codesono/apisono"
 export PATH="$(python3 -m site --user-base)/bin:$PATH"
+
+for f in ~/.config/dotfiles/extras/zsh/*rc
+do
+  source $f
+done

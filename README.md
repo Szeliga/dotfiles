@@ -2,11 +2,11 @@
 
 This repo contains my dotfiles and instructions on how to setup them
 
-## Vim
+## Setup
 
-```
-mkdir -p .config/dotfiles && git clone https://github.com/Szeliga/dotfiles.git ~/.config/dotfiles
-ln -sf ~/.config/dotfiles/vim/*.vim ~/.vim/
-ln -sf ~/.config/dotfiles/UltiSnips ~/.vim/UltiSnips
-# in you ~/.vimrc
-echo "source ~/.vim/entrypoint.vim
+Run `./setup.sh`
+
+## Sensitive data
+
+If you want to add sensitive data in your dotfiles, like git HTTP credentials, etc. then put them inside `extras/`.
+That directory is ignored in git, so it won't be accidentally committed.
