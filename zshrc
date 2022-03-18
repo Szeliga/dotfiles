@@ -41,7 +41,6 @@ alias vim='lvim'
 alias fcd='cd $(fd --type d --exclude node_modules --exclude vendor --exclude build --exclude _build --exclude bundle --exclude Godeps | fzf)'
 alias be='bundle exec'
 alias blog="cd ~/coding/blog"
-alias ngr='ngrok http -authtoken 2y8ozw77obQZ7CxSe3u7m_5q1xpb5ivGLWNiJvkodoD 3000'
 alias zshconfig="vim ~/.zshrc"
 alias fzfp="fzf --preview 'bat --style=numbers --color=always {} | head -500'"
 alias hal-wakeup="wakeonlan 70:8b:cd:53:b4:17"
@@ -65,19 +64,11 @@ function encrypt() {
 }
 
 function pogoda {
-  curl "http://wttr.in/${1:-wroclaw}" | less
+  curl "http://wttr.in/${1:-nadolice-wielkie}" | less
 }
 
 function show-size {
   du $1 | awk 'BEGIN{FS=" "} {sum+=$1} END {print sum/1024/1024 " GB"}'
-}
-
-function csr-info {
-  openssl req -in $1 -noout -text
-}
-
-function generate-csr {
-  openssl req -new -key $1.key -out $1.csr
 }
 
 function git-clean() {
@@ -86,17 +77,6 @@ function git-clean() {
   done
 }
 
-function spectrum_ls() {
-  for code in {000..255}; do
-    print -P -- "$code: %{$FG[$code]%}$ZSH_SPECTRUM_TEXT%{$reset_color%}"
-  done
-}
-
-function spectrum_bls() {
-  for code in {000..255}; do
-    print -P -- "$code: %{$BG[$code]%}$ZSH_SPECTRUM_TEXT%{$reset_color%}"
-  done
-}
 function gimmeport() {
   lsof -n -i4TCP:$1 | grep LISTEN
 }
