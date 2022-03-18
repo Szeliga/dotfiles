@@ -1,6 +1,6 @@
 # Oh-My-Zsh config
 ZSH=$HOME/.oh-my-zsh
-ZSH_THEME="my"
+ZSH_THEME="agnoster"
 DISABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
 plugins=(git history history-substring-search cp)
@@ -15,7 +15,7 @@ bindkey -M vicmd '?' history-incremental-search-backward
 bindkey -M vicmd '/' history-incremental-search-forward
 
 # ENV vars
-export EDITOR="vim"
+export EDITOR="lvim"
 export GPG_TTY=$(tty)
 export FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/*' --smart-case"
 
@@ -120,7 +120,8 @@ export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin:$HOME/Library/Python/3.
 export CDPATH="$CDPATH:$HOME/coding:$HOME/coding/codesono:$HOME/coding/codesono/apisono"
 export PATH="$(python3 -m site --user-base)/bin:$PATH"
 
-for f in ~/.config/dotfiles/extras/zsh/*rc
+files=(~/.config/dotfiles/extras/zsh/*(N))
+for f in $files
 do
   source $f
 done

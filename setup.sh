@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir -p ~/.config/dotfiles/extras/git ~/.config/dotfiles/extras/zsh
 if [[ "$OSTYPE" == "darwin"* ]]; then
   ln -sf ~/.config/dotfiles/hammerspoon ~/.hammerspoon
 fi
