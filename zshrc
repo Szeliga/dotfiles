@@ -5,24 +5,20 @@ DISABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
 plugins=(git history history-substring-search cp)
 export KEYTIMEOUT=1
-export LANG="pl_PL.UTF-8"
-export LC_COLLATE="pl_PL.UTF-8"
-export LC_CTYPE="pl_PL.UTF-8"
-export LC_MESSAGES="pl_PL.UTF-8"
 export LC_MONETARY="pl_PL.UTF-8"
 export LC_NUMERIC="pl_PL.UTF-8"
 export LC_TIME="pl_PL.UTF-8"
-export LC_ALL="pl_PL.UTF-8"
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
+
+source $HOME/.qontorc
 
 # Better searching in command mode
 bindkey -M vicmd '?' history-incremental-search-backward
 bindkey -M vicmd '/' history-incremental-search-forward
 
 # ENV vars
-export EDITOR="nvr --remote-silent"
+export EDITOR="vim"
 export GPG_TTY=$(tty)
-export GOPATH=$HOME/coding/go
 export FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/*' --smart-case"
 
 
@@ -43,13 +39,14 @@ alias gdb='git branch -D $(git branch | fzf -m)'
 # Personal aliases
 alias ba='bin/app'
 alias dc='docker-compose'
-alias vim='nvim'
+alias vim='lvim'
 alias fcd='cd $(fd --type d --exclude node_modules --exclude vendor --exclude build --exclude _build --exclude bundle --exclude Godeps | fzf)'
 alias be='bundle exec'
 alias blog="cd ~/coding/blog"
 alias ngr='ngrok http -authtoken 2y8ozw77obQZ7CxSe3u7m_5q1xpb5ivGLWNiJvkodoD 3000'
 alias zshconfig="vim ~/.zshrc"
 alias fzfp="fzf --preview 'bat --style=numbers --color=always {} | head -500'"
+alias hal-wakeup="wakeonlan 70:8b:cd:53:b4:17"
 
 # Utility functions
 function hpr() {
@@ -86,7 +83,7 @@ function generate-csr {
 }
 
 function git-clean() {
-  git fetch -p && for branch in `git branch -vv | grep ': gone]' | awk '{print $1}'`
+  git fetch -p && for branch in `LANG=en_US git branch -vv | grep ': gone]' | awk '{print $1}'`
     do git branch -D $branch
   done
 }
@@ -108,6 +105,12 @@ function gimmeport() {
 
 function c() {
   mkdir -p "$(dirname "$1")" && touch "$1"
+}
+
+function branch-name() {
+  id=$(echo -n "$1" | md5 | head -c 8)
+  echo "ss-$id"
+  echo -n "ss-$id" | pbcopy
 }
 
 source $ZSH/oh-my-zsh.sh
@@ -132,22 +135,9 @@ function workdays() {
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Node Version Manager
-eval "`fnm env --multi --shell=zsh`"
-
 # RVM
 export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin:$HOME/Library/Python/3.7/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
-# Setup colors
-(cat $HOME/.config/wpg/sequences > /dev/null 2>&1 &)
-$HOME/.config/wpg/wp_init.sh > /dev/null 2>&1
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/Users/szymonszeliga/.sdkman"
-[[ -s "/Users/szymonszeliga/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/szymonszeliga/.sdkman/bin/sdkman-init.sh"
-
-source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
-
 export CDPATH="$CDPATH:$HOME/coding:$HOME/coding/codesono:$HOME/coding/codesono/apisono"
+export PATH="$(python3 -m site --user-base)/bin:$PATH"

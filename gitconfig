@@ -8,25 +8,16 @@
   cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|production\\|develop' | xargs -n 1 git branch -d"
   co = checkout
   cob = checkout -b
-  to-deploy = log --pretty=format:'%Cred%h%Creset - %C(yellow)%ae%Creset - %Cgreen%cd%Creset - %s%Creset' --abbrev-commit --date=iso origin/master..master
 [core]
   autocrlf = input
   excludesfile = ~/.gitignore
-  editor = nvim
+  editor = vim
 [commit]
   gpgSign = false
 [merge]
   conflictstyle = diff3
   ff = only
   tool = vimdiff
-[diff]
-  tool = nvr
-[difftool "nvr"]
-  cmd = nvr -s -d $LOCAL $REMOTE
-[merge]
-    tool = nvr
-[mergetool "nvr"]
-    cmd = nvr -s -d $LOCAL $BASE $REMOTE $MERGED -c 'wincmd J | wincmd ='
 [merge "railsschema"]
   name = newer Rails schema version
   driver = "ruby -e '\n\
@@ -43,15 +34,12 @@
   showUntrackedFiles = all
 [push]
   default = simple
-[filter "hawser"]
-  clean = git hawser clean %f
-  smudge = git hawser smudge %f
-  required = true
 [filter "lfs"]
   clean = git-lfs clean %f
   smudge = git-lfs smudge %f
   required = true
-[gui]
-  recentrepo = /Users/Szymon/projects/lando
 [fetch]
 	prune = true
+
+[include]
+  path = ~/.config/dotfiles/extras/gitconfig
