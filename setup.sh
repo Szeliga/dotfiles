@@ -8,3 +8,4 @@ ln -sf ~/.config/dotfiles/gitignore ~/.gitignore
 ln -sf ~/.config/dotfiles/zshrc ~/.zshrc
 ln -sf ~/.config/dotfiles/gemrc ~/.gemrc
 ln -sf ~/.config/dotfiles/tigrc ~/.tigrc
+ln -sf ~/.config/dotfiles/lvim.lua ~/.config/lvim/config.lua
