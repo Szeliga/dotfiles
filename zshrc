@@ -19,17 +19,7 @@ export EDITOR="lvim"
 export GPG_TTY=$(tty)
 export FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/*' --smart-case"
 
-
-# Effectively aliases
-alias eff='cd ~/coding/jagersoft/effectively'
-#
-# Rails aliases
-alias rs='bin/rails s'
-alias rc='bin/rails c'
-
 # Git aliases & functions
-alias hb="hub browse"
-alias hbp="hub browse -- pulls"
 alias ts='tig status'
 alias gcob='git checkout $(git branch | fzf)'
 alias gdb='git branch -D $(git branch | fzf -m)'
@@ -40,8 +30,6 @@ alias dc='docker-compose'
 alias vim='lvim'
 alias fcd='cd $(fd --type d --exclude node_modules --exclude vendor --exclude build --exclude _build --exclude bundle --exclude Godeps | fzf)'
 alias be='bundle exec'
-alias blog="cd ~/coding/blog"
-alias zshconfig="vim ~/.zshrc"
 alias fzfp="fzf --preview 'bat --style=numbers --color=always {} | head -500'"
 alias hal-wakeup="wakeonlan 70:8b:cd:53:b4:17"
 
@@ -117,8 +105,7 @@ function workdays() {
 export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin:$HOME/Library/Python/3.7/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
-export CDPATH="$CDPATH:$HOME/coding:$HOME/coding/codesono:$HOME/coding/codesono/apisono"
-export PATH="$(python3 -m site --user-base)/bin:$PATH"
+export CDPATH="$CDPATH:$HOME/work:$HOME/coding:$HOME/.config"
 
 files=(~/.config/dotfiles/extras/zsh/*(N))
 for f in $files
