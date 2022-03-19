@@ -9,7 +9,7 @@ an executable
 -- THESE ARE EXAMPLE CONFIGS FEEL FREE TO CHANGE TO WHATEVER YOU WANT
 
 -- general
-local colorscheme = "nordfox"
+local colorscheme = "kanagawa"
 lvim.log.level = "warn"
 lvim.format_on_save = true
 lvim.colorscheme = colorscheme
@@ -89,6 +89,7 @@ lvim.builtin.treesitter.ensure_installed = {
 
 lvim.builtin.treesitter.ignore_install = { "haskell" }
 lvim.builtin.treesitter.highlight.enabled = true
+lvim.builtin.treesitter.indent.enable = false
 
 -- generic LSP settings
 
@@ -200,7 +201,8 @@ lvim.plugins = {
     end
   },
   { "nvim-treesitter/nvim-treesitter-textobjects" },
-  { "EdenEast/nightfox.nvim" }
+  { "EdenEast/nightfox.nvim" },
+  { "rebelot/kanagawa.nvim" },
 }
 
 require'nvim-treesitter.configs'.setup {
@@ -246,5 +248,3 @@ require'lspconfig'.ltex.setup{
 }
 
 local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
-
-lvim.builtin.treesitter.indent.enable = false
