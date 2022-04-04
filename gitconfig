@@ -2,7 +2,7 @@
   name = Szymon Szeliga
   email = szeliga.szymon@gmail.com
   config = szeliga.szymon@gmail.com
-  ; signingkey = 19AD8F759A86D262
+  signingkey = D7814A351BF20692
 [alias]
   lg = log --all --pretty=format:'%Cred%h%Creset - %C(yellow)%ae%Creset - %Cgreen%cd%Creset - %s%Creset' --abbrev-commit --date=iso
   cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|production\\|develop' | xargs -n 1 git branch -d"
@@ -13,7 +13,7 @@
   excludesfile = ~/.gitignore
   editor = lvim
 [commit]
-  gpgSign = false
+  gpgSign = true
 [merge]
   conflictstyle = diff3
   ff = only
