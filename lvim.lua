@@ -13,6 +13,9 @@ local colorscheme = "kanagawa"
 lvim.log.level = "warn"
 lvim.format_on_save = true
 lvim.colorscheme = colorscheme
+
+lvim.lsp.templates_dir = join_paths(get_runtime_dir(), "after", "ftplugin")
+
 -- vim.g.material_style = "oceanic"
 
 lvim.builtin.dap.active = false
@@ -68,6 +71,7 @@ lvim.builtin.telescope.defaults.mappings = {
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.dashboard.active = true
 lvim.builtin.terminal.active = true
+lvim.builtin.notify.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.show_icons.git = 0
 
@@ -80,6 +84,7 @@ lvim.builtin.treesitter.ensure_installed = {
   "javascript",
   "json",
   "lua",
+  "markdown",
   "python",
   "ruby",
   "rust",
@@ -142,22 +147,22 @@ lvim.lsp.automatic_servers_installation = false
 -- end
 
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
-local formatters = require "lvim.lsp.null-ls.formatters"
-formatters.setup {
-  {
-    exe = "standardrb",
-    ---@usage arguments to pass to the formatter
-    -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
-    args = { "--fix" },
-    ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-    filetypes = { "ruby" },
-  },
-}
+-- local formatters = require "lvim.lsp.null-ls.formatters"
+-- formatters.setup {
+--   {
+--     exe = "standardrb",
+--     ---@usage arguments to pass to the formatter
+--     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
+--     args = { "--fix" },
+--     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
+--     filetypes = { "ruby" },
+--   },
+-- }
 
 -- -- set additional linters
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
-  { exe = "standardrb", filetypes = { "ruby" } },
+  { exe = "rubocop", filetypes = { "ruby" } },
   -- { exe = "flake8", filetypes = { "python" } },
   -- {
   --   exe = "shellcheck",
@@ -237,14 +242,7 @@ lvim.builtin.lualine.sections.lualine_z = {require("lvim.core.lualine.components
 lvim.builtin.lualine.theme = colorscheme
 
 
-vim.g.tokyonight_style = "night"
-vim.g.instant_username = "szymon"
 vim.wo.foldmethod = "expr"
 vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
 vim.o.grepprg = "rg --vimgrep --no-heading --smart-case"
 vim.o.grepformat = "%f:%l:%c:%m"
-require'lspconfig'.ltex.setup{
-  cmd = { "/home/dev/.local/share/nvim/lsp_servers/ltex/ltex-ls/bin/ltex-ls" },
-}
-
-local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()

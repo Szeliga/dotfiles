@@ -94,6 +94,10 @@ function kubectl() {
 
     command kubectl "$@"
 }
+if command -v op  &> /dev/null
+then
+  eval "$(op completion zsh)"; compdef _op op
+fi
 
 function workdays() {
   LC_ALL=en ncal -h | grep -vE "^S|^ |^$" | sed "s/[[:alpha:]]//g" | fmt -w 1 | sort -n | wc -l
