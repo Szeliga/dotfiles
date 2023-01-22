@@ -106,7 +106,8 @@ function workdays() {
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # RVM
-export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin:$HOME/Library/Python/3.7/bin"
+export GOPATH="$HOME/go"
+export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin:$HOME/Library/Python/3.7/bin:$GOPATH/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
 export CDPATH="$CDPATH:$HOME/work:$HOME/coding:$HOME/.config"

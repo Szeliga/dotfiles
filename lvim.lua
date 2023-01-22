@@ -18,7 +18,7 @@ lvim.lsp.templates_dir = join_paths(get_runtime_dir(), "after", "ftplugin")
 
 -- vim.g.material_style = "oceanic"
 
-lvim.builtin.dap.active = false
+lvim.builtin.dap.active = true
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = ","
@@ -26,11 +26,15 @@ lvim.leader = ","
 lvim.keys.normal_mode["<leader>q"] = ""
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 lvim.keys.normal_mode["<leader>f"] = ":Telescope find_files<cr>"
-lvim.keys.normal_mode[";"] = ":Telescope buffers<cr>"
 lvim.keys.normal_mode["<space>"] = ":noh<cr>"
 lvim.keys.normal_mode["<leader>w"] = ":w<CR>"
 lvim.keys.normal_mode["<leader>a"] = ":Telescope grep_string<CR>"
 lvim.keys.normal_mode["<leader>q"] = ":BufferClose<CR>"
+lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
+lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
+vim.keymap.set({ "n" }, "T", require("ts-node-action").node_action, { desc = "Trigger Node Action" })
+
+
 -- unmap a default keymapping
 -- lvim.keys.normal_mode["<C-Up>"] = ""
 -- edit a default keymapping
@@ -72,9 +76,9 @@ lvim.builtin.telescope.defaults.mappings = {
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "startify"
 lvim.builtin.terminal.active = true
-lvim.builtin.notify.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
-lvim.builtin.nvimtree.show_icons.git = 0
+-- lvim.builtin.nvimtree.setup
+-- lvim.builtin.nvimtree.show_icons.git = 0
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -101,6 +105,7 @@ lvim.builtin.treesitter.indent.enable = false
 
 -- ---@usage disable automatic installation of servers
 lvim.lsp.automatic_servers_installation = false
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "solargraph" }, 1, 1)
 
 -- ---@usage Select which servers should be configured manually. Requires `:LvimCacheRest` to take effect.
 -- See the full default list `:lua print(vim.inspect(lvim.lsp.override))`
@@ -150,21 +155,14 @@ lvim.lsp.automatic_servers_installation = false
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 -- local formatters = require "lvim.lsp.null-ls.formatters"
 -- formatters.setup {
---   {
---     exe = "standardrb",
---     ---@usage arguments to pass to the formatter
---     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
---     args = { "--fix" },
---     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
---     filetypes = { "ruby" },
---   },
+--   { exe = "rubocop", filetypes = { "ruby" } },
 -- }
 
 -- -- set additional linters
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
-  { exe = "rubocop", filetypes = { "ruby" } },
-  -- { exe = "flake8", filetypes = { "python" } },
+  -- { exe = "rubocop", filetypes = { "ruby" } },
+  { exe = "golangci-lint", filetypes = { "go" } },
   -- {
   --   exe = "shellcheck",
   --   ---@usage arguments to pass to the formatter
@@ -180,25 +178,16 @@ linters.setup {
 
 -- Additional Plugins
 lvim.plugins = {
-  {"ellisonleao/glow.nvim"},
-  {"folke/tokyonight.nvim"},
-  {"lukas-reineke/indent-blankline.nvim"},
-  {"mhartington/oceanic-next"},
-  {"onemanstartup/vim-slim"},
-  {"sQVe/sort.nvim"},
-  {"tpope/vim-surround"},
-  {"micmine/jumpwire.nvim"},
-  {"tpope/vim-projectionist"},
+  { "ellisonleao/glow.nvim" },
+  { "folke/tokyonight.nvim" },
+  { "lukas-reineke/indent-blankline.nvim" },
+  { "mhartington/oceanic-next" },
+  { "onemanstartup/vim-slim" },
+  { "sQVe/sort.nvim" },
+  { "tpope/vim-surround" },
+  { "micmine/jumpwire.nvim" },
+  { "tpope/vim-projectionist" },
   { "jbyuki/instant.nvim" },
-  {
-    "rmagatti/auto-session",
-    config = function()
-      require('auto-session').setup {
-        log_level = 'info',
-        auto_session_suppress_dirs = {"~/.config/lvim/sessions"}
-      }
-    end
-  },
   {
     "ray-x/lsp_signature.nvim",
     event = "BufRead",
@@ -207,11 +196,50 @@ lvim.plugins = {
     end
   },
   { "nvim-treesitter/nvim-treesitter-textobjects" },
-  { "EdenEast/nightfox.nvim" },
+  -- { "EdenEast/nightfox.nvim" },
   { "rebelot/kanagawa.nvim" },
+  {
+    "kevinhwang91/nvim-bqf",
+    event = { "BufRead", "BufNew" },
+    config = function()
+      require("bqf").setup({
+        auto_enable = true,
+        preview = {
+          win_height = 12,
+          win_vheight = 12,
+          delay_syntax = 80,
+          border_chars = { "┃", "┃", "━", "━", "┏", "┓", "┗", "┛", "█" },
+        },
+        func_map = {
+          vsplit = "",
+          ptogglemode = "z,",
+          stoggleup = "",
+        },
+        filter = {
+          fzf = {
+            action_for = { ["ctrl-s"] = "split" },
+            extra_opts = { "--bind", "ctrl-o:toggle-all", "--prompt", "> " },
+          },
+        },
+      })
+    end,
+  },
+  -- { "sindrets/diffview.nvim", requires = "nvim-lua/plenary.nvim" },
+  -- { "~/learning/codeowners.nvim" },
+  { "ray-x/go.nvim" },
+  -- { "anuvyklack/hydra.nvim" },
+  -- { "mbbill/undotree" },
+  -- { "TimUntersberger/neogit" },
+  {
+    'ckolkey/ts-node-action',
+    requires = { 'nvim-treesitter' },
+    config = function() -- Optional
+      require("ts-node-action").setup({})
+    end
+  }
 }
 
-require'nvim-treesitter.configs'.setup {
+require 'nvim-treesitter.configs'.setup {
   textobjects = {
     select = {
       enable = true,
@@ -239,11 +267,46 @@ require'nvim-treesitter.configs'.setup {
 --   { "BufWinEnter", "*.lua", "setlocal ts=8 sw=8" },
 -- }
 
-lvim.builtin.lualine.sections.lualine_z = {require("lvim.core.lualine.components").scrollbar, require('auto-session-library').current_session_name}
+lvim.builtin.lualine.sections.lualine_z = { require("lvim.core.lualine.components").scrollbar }
 lvim.builtin.lualine.theme = colorscheme
+
+require("go").setup()
 
 
 vim.wo.foldmethod = "expr"
+vim.wo.foldlevel = 99
 vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
 vim.o.grepprg = "rg --vimgrep --no-heading --smart-case"
 vim.o.grepformat = "%f:%l:%c:%m"
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  buffer = vim.fn.bufnr(),
+  callback = function()
+    local opts = {
+      virtual_text = false,
+      focusable = false,
+      close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+      border = 'rounded',
+      source = 'always',
+      prefix = ' ',
+      scope = 'cursor',
+    }
+    vim.diagnostic.open_float(nil, opts)
+  end
+})
+
+vim.api.nvim_create_augroup('diagnostics', { clear = true })
+
+vim.api.nvim_create_autocmd('DiagnosticChanged', {
+  group = 'diagnostics',
+  callback = function()
+    vim.diagnostic.setloclist({ open = false })
+  end,
+})
+
+-- require("hydra.telescope").setup()
+-- require("hydra.git").setup()
+-- vim.api.nvim_create_autocmd({ "BufEnter" }, {
+--   pattern = { "*" },
+--   command = "normal zx",
+-- })

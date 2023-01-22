@@ -43,3 +43,5 @@ config/definitions.rb
 vendor/bundle
 .projections.json
 .ruby-gemset
+
+ignored/
