@@ -3,7 +3,7 @@ ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="agnoster"
 DISABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
-plugins=(git history history-substring-search cp kubectl docker docker-compose ripgrep fd sudo zsh-interactive-cd)
+plugins=(git history history-substring-search cp kubectl docker ripgrep fd sudo zsh-interactive-cd)
 export KEYTIMEOUT=1
 export LC_MONETARY="pl_PL.UTF-8"
 export LC_NUMERIC="pl_PL.UTF-8"
@@ -32,16 +32,6 @@ alias fcd='cd $(fd --type d --exclude node_modules --exclude vendor --exclude bu
 alias be='bundle exec'
 alias fzfp="fzf --preview 'bat --style=numbers --color=always {} | head -500'"
 alias hal-wakeup="wakeonlan 70:8b:cd:53:b4:17"
-
-# Utility functions
-function hpr() {
-  git push -u && \
-    echo -e "$(git rev-list --format=%B --max-count=1 HEAD | tail -n +2) \n\n $(cat .github/pull_request_template.md)" |\
-    hub pull-request \
-      -b ${1:-master} \
-      -F - |\
-      xargs open
-}
 
 function decrypt() {
   openssl enc -aes256 -in $1 -out $2 -salt -d
@@ -100,7 +90,7 @@ then
 fi
 
 function workdays() {
-  LC_ALL=en ncal -h | grep -vE "^S|^ |^$" | sed "s/[[:alpha:]]//g" | fmt -w 1 | sort -n | wc -l
+  LANG=en LC_ALL=en ncal -h -m $1 | grep -vE "^S|^ |^$" | sed "s/[[:alpha:]]//g" | fmt -w 1 | sort -n | wc -l
 }
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
