@@ -11,7 +11,7 @@
 [core]
   autocrlf = input
   excludesfile = ~/.gitignore
-  editor = lvim
+  editor = nvim
 [commit]
   gpgSign = true
 [merge]

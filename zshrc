@@ -15,7 +15,7 @@ bindkey -M vicmd '?' history-incremental-search-backward
 bindkey -M vicmd '/' history-incremental-search-forward
 
 # ENV vars
-export EDITOR="lvim"
+export EDITOR="nvim"
 export GPG_TTY=$(tty)
 export FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/*' --smart-case"
 
