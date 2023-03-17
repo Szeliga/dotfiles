@@ -2,6 +2,7 @@ local telescope = require("telescope.builtin")
 local spectre = require("spectre")
 local set = vim.keymap.set
 local dap = require('dap')
+local treesj = require('treesj')
 
 -- Telescope
 set("n", "<leader>ff", telescope.find_files, { desc = "Find files", silent = true })
@@ -10,6 +11,9 @@ set("n", "<leader>fb", telescope.buffers, { desc = "Find buffers", silent = true
 set("n", "<leader>fm", telescope.marks, { desc = "Find marks", silent = true })
 set("n", "<leader>fq", telescope.quickfix, { desc = "Find quickfix items", silent = true })
 set("n", "<leader><leader>", function() vim.cmd("Telescope") end, { desc = "Find quickfix items", silent = true })
+
+-- Nvim-tree
+set("n", "<leader>e", function() vim.cmd("NvimTreeFindFileToggle") end, { desc = "Open file browser", silent = true })
 
 -- Utility
 set("n", "H", ":BufferLineCyclePrev<cr>", { desc = "Previous buffer", silent = true })
@@ -28,12 +32,14 @@ set(
 )
 set("n", "<leader>F", function() vim.cmd("LspZeroFormat") end, { desc = "Format current file using LSP", silent = true })
 set("t", "<ESC><ESC>", "<c-\\><c-n>", { desc = "Exit insert mode in terminal", silent = true })
+set("n", "<leader>j", treesj.toggle, { desc = "Split/Join object", silent = true })
 
 -- Testing
 set("n", "<leader>tt", function() vim.cmd("TestLast") end, { desc = "Run last tests", silent = true })
 set("n", "<leader>tf", function() vim.cmd("TestFile") end, { desc = "Run current file tests", silent = true })
 set("n", "<leader>tn", function() vim.cmd("TestNearest") end, { desc = "Run nearest test", silent = true })
 set("n", "<leader>ts", function() vim.cmd("TestSuite") end, { desc = "Run suite tests", silent = true })
+set("n", "gt", function() vim.cmd("Other") end, { desc = "Go to test/implementation", silent = true })
 
 -- Debugging
 set("n", "<leader>bb", function() dap.toggle_breakpoint() end, { desc = "Toggle breakpoint", silent = true })

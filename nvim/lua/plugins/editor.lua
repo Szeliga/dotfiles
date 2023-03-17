@@ -1,5 +1,18 @@
 return {
   {
+    "nvim-tree/nvim-tree.lua",
+    dependencies = {
+      "nvim-tree/nvim-web-devicons"
+    },
+    config = function()
+      require("nvim-tree").setup({
+        filters = {
+          dotfiles = false,
+        }
+      })
+    end
+  },
+  {
     "echasnovski/mini.ai",
     keys = {
       { "a", mode = { "x", "o" } },
@@ -103,5 +116,19 @@ return {
     config = function()
       require("spectre").setup()
     end
+  },
+  {
+    "willothy/flatten.nvim",
+    lazy = false,
+    config = true,
+  },
+  {
+    "Wansmer/treesj",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      require("treesj").setup({
+        max_join_length = 5000
+      })
+    end,
   }
 }
