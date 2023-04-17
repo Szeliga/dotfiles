@@ -97,7 +97,7 @@ function workdays() {
 
 # RVM
 export GOPATH="$HOME/go"
-export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/.rvm/bin:$HOME/Library/Python/3.7/bin:$GOPATH/bin"
+export PATH="$PATH:$HOME/.rvm/bin:$HOME/.local/bin:./bin:$HOME/Library/Python/3.7/bin:$GOPATH/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
 export CDPATH="$CDPATH:$HOME/work:$HOME/coding:$HOME/.config"
@@ -107,3 +107,7 @@ for f in $files
 do
   source $f
 done
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

@@ -71,6 +71,19 @@ return {
   },
   {
     "leoluz/nvim-dap-go",
-    config = true,
+    config = function()
+      require('dap-go').setup {
+        dap_configurations = {
+          {
+            type = "go",
+            name = "Debug functional test (go.mod)",
+            request = "launch",
+            mode = "test",
+            program = "./${relativeFileDirname}",
+            args = { "-tags", "functional" }
+          },
+        },
+      }
+    end,
   },
 }

@@ -54,19 +54,18 @@ return {
         lsp_format_on_save(bufnr)
       end)
 
-      lsp.setup_servers({ "standardrb", "grammarly", force = true })
+      lsp.setup_servers({ "grammarly", force = true })
 
       lsp.configure("solargraph", {
         settings = {
           solargraph = {
-            diagnostics = false
+            diagnostics = true
           }
         },
         init_options = {
-          formatting = false
+          formatting = true
         }
       })
-      lsp.configure("standardrb")
 
       lsp.setup_nvim_cmp({
         sources = {
