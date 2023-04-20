@@ -95,6 +95,10 @@ function workdays() {
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+if [ -f "${HOME}/.gemrc.local" ]; then
+  export GEMRC="${HOME}/.gemrc.local"
+fi
+
 # RVM
 export GOPATH="$HOME/go"
 export PATH="$PATH:$HOME/.rvm/bin:$HOME/.local/bin:./bin:$HOME/Library/Python/3.7/bin:$GOPATH/bin"
