@@ -59,11 +59,11 @@ return {
       lsp.configure("solargraph", {
         settings = {
           solargraph = {
-            diagnostics = true
+            diagnostics = false
           }
         },
         init_options = {
-          formatting = true
+          formatting = false
         }
       })
 
