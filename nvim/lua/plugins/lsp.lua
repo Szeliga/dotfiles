@@ -60,11 +60,11 @@ return {
         cmd = { "rvm", ".", "do", "solargraph", "stdio" },
         settings = {
           solargraph = {
-            diagnostics = false,
+            diagnostics = true,
           }
         },
         init_options = {
-          formatting = false
+          formatting = true
         }
       })
 
