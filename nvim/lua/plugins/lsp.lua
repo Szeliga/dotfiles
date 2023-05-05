@@ -57,9 +57,10 @@ return {
       lsp.setup_servers({ "grammarly", force = true })
 
       lsp.configure("solargraph", {
+        cmd = { "rvm", ".", "do", "solargraph", "stdio" },
         settings = {
           solargraph = {
-            diagnostics = false
+            diagnostics = false,
           }
         },
         init_options = {
