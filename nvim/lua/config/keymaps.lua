@@ -10,7 +10,9 @@ set("n", "<leader>fs", telescope.live_grep, { desc = "Grep in project", silent =
 set("n", "<leader>fb", telescope.buffers, { desc = "Find buffers", silent = true })
 set("n", "<leader>fm", telescope.marks, { desc = "Find marks", silent = true })
 set("n", "<leader>fq", telescope.quickfix, { desc = "Find quickfix items", silent = true })
-set("n", "<leader><leader>", function() vim.cmd("Telescope") end, { desc = "Find quickfix items", silent = true })
+set("n", "<leader>fg", telescope.git_status, { desc = "Find modified git files", silent = true })
+set("n", "<leader>fd", telescope.diagnostics, { desc = "Show diagnostics", silent = true })
+set("n", "<leader><leader>", function() vim.cmd("Telescope") end, { desc = "Open Telescope", silent = true })
 
 -- Nvim-tree
 set("n", "<leader>e", function() vim.cmd("NvimTreeFindFileToggle") end, { desc = "Open file browser", silent = true })
