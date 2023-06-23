@@ -54,6 +54,7 @@ end
 -- Fix markdown indentation settings
 vim.g.markdown_recommended_style = 0
 
-opt.foldmethod = "expr"
-opt.foldlevel = 2
-opt.foldexpr = "nvim_treesitter#foldexpr()"
+opt.foldcolumn = '1' -- '0' is not bad
+opt.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
+opt.foldlevelstart = 99
+opt.foldenable = true

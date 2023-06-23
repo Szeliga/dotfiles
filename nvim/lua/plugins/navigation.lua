@@ -33,6 +33,18 @@ return {
             },
           },
           {
+            pattern = "/app/controllers/(.*)_controller.rb",
+            target = {
+              { context = "test", target = "/spec/requests/%1_spec.rb" },
+            },
+          },
+          {
+            pattern = "/spec/requests/(.*)_spec.rb",
+            target = {
+              { context = "implementation", target = "/app/controllers/%1_controller.rb" },
+            },
+          },
+          {
             pattern = "/lib/(.*)/(.*).rb",
             target = {
               { context = "test", target = "/spec/lib/%1/%2_spec.rb" },
@@ -59,5 +71,5 @@ return {
         }
       })
     end
-  }
+  },
 }
