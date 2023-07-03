@@ -36,7 +36,6 @@ set("n", "<leader>F", function() vim.cmd("LspZeroFormat") end, { desc = "Format 
 set("t", "<ESC><ESC>", "<c-\\><c-n>", { desc = "Exit insert mode in terminal", silent = true })
 set("n", "<leader>j", treesj.toggle, { desc = "Split/Join object", silent = true })
 set("n", "<leader>w", ":w<CR>", { desc = "Save", silent = true })
-set("i", "<leader>w", "<ESC>:w<CR>", { desc = "Save", silent = true })
 
 -- Testing
 set("n", "<leader>tt", function() vim.cmd("TestLast") end, { desc = "Run last tests", silent = true })
@@ -67,3 +66,11 @@ set("n", "<leader>sf", function() spectre.open_file_search() end, { desc = "Find
 -- Folding
 set('n', 'zR', require('ufo').openAllFolds)
 set('n', 'zM', require('ufo').closeAllFolds)
+set('n', 'zr', require('ufo').openFoldsExceptKinds)
+set('n', 'zm', require('ufo').closeFoldsWith) -- closeAllFolds == closeFoldsWith(0)
+set('n', 'K', function()
+  local winid = require('ufo').peekFoldedLinesUnderCursor()
+  if not winid then
+    vim.lsp.buf.hover()
+  end
+end)

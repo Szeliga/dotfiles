@@ -52,13 +52,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.api.nvim_create_autocmd({ "BufEnter" }, {
-  group = augroup("folding"),
-  pattern = { "*" },
-  command = "normal zx zR",
-})
-
-
 vim.api.nvim_create_autocmd({ "TextYankPost" }, {
   group = augroup("ui"),
   pattern = { "*" },
