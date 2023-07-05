@@ -59,3 +59,11 @@ vim.api.nvim_create_autocmd({ "TextYankPost" }, {
     require("vim.highlight").on_yank({ higroup = "IncSearch", timeout = 1000 })
   end,
 })
+
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  group = augroup("writing"),
+  pattern = "*",
+  callback = function()
+    vim.fn.mkdir(vim.fn.expand("<afile>:p:h"), "p")
+  end
+})
