@@ -101,7 +101,7 @@ fi
 
 # RVM
 export GOPATH="$HOME/go"
-export PATH="$PATH:$HOME/.rvm/bin:$HOME/.local/bin:./bin:$HOME/Library/Python/3.7/bin:$GOPATH/bin"
+export PATH="$HOME/.rvm/bin:$PATH:$HOME/.local/bin:./bin:$HOME/Library/Python/3.7/bin:$GOPATH/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
 export CDPATH="$CDPATH:$HOME/work:$HOME/coding:$HOME/.config"
