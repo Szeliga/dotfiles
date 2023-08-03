@@ -29,7 +29,7 @@ local filename = function()
 end
 
 ls.add_snippets("ruby", {
-  s("contractfailure", {
+  s("400failure", {
     t({
       "in Failure[:invalid_payload, Dry::Validation::Result => err]",
       "  render(json: Qonto::Controller::Addons::ValidationError.new(err).as_json, status: 400)"

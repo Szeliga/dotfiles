@@ -21,7 +21,7 @@ return {
       }
 
       require("nvim-test.runners.rspec"):setup {
-        command = "bin/project rspec"
+        command = "bin/project bundle exec rspec"
       }
     end
   }

@@ -38,6 +38,7 @@ return {
           }, {}),
           f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }, {}),
           c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }, {}),
+          r = ai.gen_spec.treesitter({ a = "@block.outer", i = "@block.inner" }, {}),
         },
       }
     end,
