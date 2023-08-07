@@ -55,7 +55,7 @@ return {
         lsp_format_on_save(bufnr)
       end)
 
-      lsp.setup_servers({ "grammarly", force = true })
+      lsp.setup_servers({ "grammarly", "solargraph", force = true })
 
       lsp.configure("solargraph", {
         cmd = { "rvm", ".", "do", "solargraph", "stdio" },
