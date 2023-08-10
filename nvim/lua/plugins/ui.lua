@@ -56,7 +56,7 @@ return {
         sections = {
           lualine_a = { 'mode' },
           lualine_b = { 'branch', 'diff', 'diagnostics' },
-          lualine_c = { { navic.get_location, cond = navic.is_available } },
+          lualine_c = { 'filename' },
           lualine_x = {
             'encoding', 'fileformat', 'filetype'
           },
