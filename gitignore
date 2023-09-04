@@ -46,3 +46,4 @@ vendor/bundle
 
 ignored/
 bin/project
+otel.dev.env

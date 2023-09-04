@@ -55,19 +55,29 @@ return {
         lsp_format_on_save(bufnr)
       end)
 
-      lsp.setup_servers({ "grammarly", "solargraph", force = true })
+      lsp.configure("rubocop", {
+        cmd = { "rvm", ".", "do", "rubocop", "--lsp" }
+      })
 
       lsp.configure("solargraph", {
         cmd = { "rvm", ".", "do", "solargraph", "stdio" },
         settings = {
           solargraph = {
-            diagnostics = true,
+            diagnostics = false,
           }
         },
         init_options = {
-          formatting = true
+          formatting = false
         }
       })
+
+      lsp.setup_servers({
+        "grammarly",
+        "solargraph",
+        "rubocop",
+        force = true,
+      })
+
       local schemastore = require('schemastore')
       local lspconfig = require('lspconfig')
       lspconfig.jsonls.setup({
