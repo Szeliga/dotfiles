@@ -37,38 +37,42 @@ return {
       -- (Optional) Configure lua language server for neovim
       lsp.nvim_workspace()
 
-      local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
-      local lsp_format_on_save = function(bufnr)
-        vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-        vim.api.nvim_create_autocmd('BufWritePre', {
-          group = augroup,
-          buffer = bufnr,
-          callback = function()
-            vim.lsp.buf.format()
-          end,
-        })
-      end
+      lsp.format_on_save({
+        format_opts = {
+          async = true,
+          timeout_ms = 10000,
+        },
+        servers = {
+          ['lua_ls'] = { 'lua' },
+          ['rubocop'] = { 'ruby' },
+        }
+      })
+
       lsp.on_attach(function(client, bufnr)
         if client.server_capabilities.documentSymbolProvider then
           require("nvim-navic").attach(client, bufnr)
         end
-        lsp_format_on_save(bufnr)
       end)
 
       lsp.configure("rubocop", {
         cmd = { "rvm", ".", "do", "rubocop", "--lsp" }
       })
-
       lsp.configure("solargraph", {
         cmd = { "rvm", ".", "do", "solargraph", "stdio" },
         settings = {
           solargraph = {
             diagnostics = false,
-          }
+            format = false,
+            autoformat = false,
+            formatting = false,
+          },
         },
         init_options = {
-          formatting = false
-        }
+          diagnostics = false,
+          format = false,
+          autoformat = false,
+          formatting = false,
+        },
       })
 
       lsp.setup_servers({

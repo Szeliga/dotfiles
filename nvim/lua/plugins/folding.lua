@@ -10,6 +10,7 @@ return {
     config = function()
       local ftMap = {
         go = 'lsp',
+        ruby = 'lsp',
       }
       require("ufo").setup {
         close_fold_kinds = { "comments", "imports" },

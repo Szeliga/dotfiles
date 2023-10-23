@@ -35,7 +35,6 @@ set(
 set("n", "<leader>F", function() vim.cmd("LspZeroFormat") end, { desc = "Format current file using LSP", silent = true })
 set("t", "<ESC><ESC>", "<c-\\><c-n>", { desc = "Exit insert mode in terminal", silent = true })
 set("n", "<leader>j", treesj.toggle, { desc = "Split/Join object", silent = true })
-set("n", "<leader>w", ":w<CR>", { desc = "Save", silent = true })
 
 -- Testing
 set("n", "<leader>tt", function() vim.cmd("TestLast") end, { desc = "Run last tests", silent = true })
