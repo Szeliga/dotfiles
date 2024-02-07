@@ -2,22 +2,33 @@
   name = Szymon Szeliga
   email = szeliga.szymon@gmail.com
   config = szeliga.szymon@gmail.com
-  signingkey = D7814A351BF20692
+  signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPVbttiqkGppBgnFBujHklHyQuWCJZYGk2HSoBeE0iXP
+
+[gpg]
+  format = ssh
+
+[gpg "ssh"]
+  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
+[commit]
+  gpgsign = true
+
 [alias]
   lg = log --all --pretty=format:'%Cred%h%Creset - %C(yellow)%ae%Creset - %Cgreen%cd%Creset - %s%Creset' --abbrev-commit --date=iso
   cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|production\\|develop' | xargs -n 1 git branch -d"
   co = checkout
   cob = checkout -b
+
 [core]
   autocrlf = input
   excludesfile = ~/.gitignore
   editor = nvim
-[commit]
-  gpgSign = true
+
 [merge]
   conflictstyle = diff3
   ff = only
   tool = vimdiff
+
 [merge "railsschema"]
   name = newer Rails schema version
   driver = "ruby -e '\n\
@@ -28,21 +39,26 @@
     end\n\
     File.open(%(%A), %(w)) {|f| f.write(b)}\n\
     exit 1 if b.include?(%(<)*%L)'"
+
 [branch]
   autosetuprebase = always
+
 [status]
   showUntrackedFiles = all
+
 [push]
   default = simple
   autoSetupRemote = true
+
 [filter "lfs"]
   clean = git-lfs clean %f
   smudge = git-lfs smudge %f
   required = true
+
 [fetch]
 	prune = true
 
 [include]
   path = ~/.config/dotfiles/extras/git/config
 [init]
-	defaultBranch = main
+	defaultBranch = master

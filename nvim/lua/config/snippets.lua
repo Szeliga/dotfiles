@@ -29,10 +29,10 @@ local filename = function()
 end
 
 ls.add_snippets("ruby", {
-  s("400failure", {
+  s("422failure", {
     t({
       "in Failure[:invalid_payload, Dry::Validation::Result => err]",
-      "  render(json: Qonto::Controller::Addons::ValidationError.new(err).as_json, status: 400)"
+      "  render(json: Qonto::Controller::Addons::ValidationError.new(err).as_json, status: 422)"
     }),
   }),
 })
