@@ -48,10 +48,17 @@ return {
             pattern = "/app/controllers/(.*)_controller.rb",
             target = {
               { context = "test", target = "/spec/requests/%1_spec.rb" },
+              { context = "test", target = "/spec/requests/%1/*_spec.rb" },
             },
           },
           {
             pattern = "/spec/requests/(.*)_spec.rb",
+            target = {
+              { context = "implementation", target = "/app/controllers/%1_controller.rb" },
+            },
+          },
+          {
+            pattern = "/spec/requests/(.*)/.*_spec.rb",
             target = {
               { context = "implementation", target = "/app/controllers/%1_controller.rb" },
             },
