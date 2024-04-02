@@ -16,7 +16,6 @@ return {
         ensure_installed = {
           "lua",
           "vim",
-          "help",
           "ruby",
           "yaml",
           "json",
