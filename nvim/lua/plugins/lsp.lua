@@ -21,12 +21,19 @@ return {
       { 'hrsh7th/cmp-path' },         -- Optional
       { 'saadparwaiz1/cmp_luasnip' }, -- Optional
       { 'hrsh7th/cmp-nvim-lua' },     -- Optional
+      { "supermaven-inc/supermaven-nvim" },
 
       -- Snippets
       { 'L3MON4D3/LuaSnip' },             -- Required
       { 'rafamadriz/friendly-snippets' }, -- Optional
     },
     config = function()
+      require("supermaven-nvim").setup({
+        ignore_filetypes = { cpp = true },
+        disable_inline_completion = true, -- disables inline completion for use with cmp
+        disable_keymaps = true -- disables built in keymaps for more manual control
+      })
+
       local lsp = require('lsp-zero').preset({
         name = 'minimal',
         set_lsp_keymaps = { preserve_mappings = false },
@@ -147,6 +154,7 @@ return {
         sources = {
           { name = 'path' },
           { name = 'luasnip',  keyword_length = 2 },
+          { name = 'supermaven' },
           { name = 'nvim_lsp', keyword_length = 1 },
           { name = 'buffer',   keyword_length = 2 },
         }

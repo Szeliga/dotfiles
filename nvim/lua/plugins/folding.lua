@@ -13,7 +13,9 @@ return {
         ruby = 'lsp',
       }
       require("ufo").setup {
-        close_fold_kinds = { "comments", "imports" },
+        close_fold_kinds_for_ft = {
+          default = { "comments", "imports" },
+        },
         provider_selector = function(bufnr, filetype)
           if vim.bo[bufnr].bt == 'nofile' then
             return ''

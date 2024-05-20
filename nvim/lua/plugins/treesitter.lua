@@ -14,28 +14,29 @@ return {
 
       require("nvim-treesitter.configs").setup({
         ensure_installed = {
-          "lua",
-          "vim",
-          "ruby",
-          "yaml",
-          "json",
-          "markdown",
+          "bash",
+          "diff",
+          "dockerfile",
+          "git_rebase",
+          "gitattributes",
+          "gitcommit",
+          "gitignore",
           "go",
           "gomod",
           "gosum",
           "graphql",
+          "json",
+          "lua",
           "make",
+          "markdown",
+          "pkl",
+          "plantuml",
           "regex",
+          "ruby",
           "sql",
           "terraform",
-          "bash",
-          "dockerfile",
-          "diff",
-          "gitcommit",
-          "gitignore",
-          "git_rebase",
-          "gitattributes",
-          "plantuml"
+          "vim",
+          "yaml",
         },
         sync_install = true,
         auto_install = true,
@@ -47,5 +48,16 @@ return {
   },
   {
     "nvim-treesitter/playground"
+  },
+  {
+    "apple/pkl-neovim",
+    lazy = true,
+    event = "BufReadPre *.pkl",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
+    build = function()
+      vim.cmd("TSInstall! pkl")
+    end,
   }
 }

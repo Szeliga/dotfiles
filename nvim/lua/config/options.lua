@@ -17,6 +17,7 @@ opt.ignorecase = true      -- Ignore case
 opt.inccommand = "nosplit" -- preview incremental substitute
 opt.laststatus = 3
 opt.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
+opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 opt.list = true            -- Show some invisible characters (tabs...
 opt.mouse = "a"            -- Enable mouse mode
 opt.number = true          -- Print line number
