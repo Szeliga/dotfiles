@@ -27,7 +27,6 @@ return {
             }
           }
         }
-        --       { 'SmiteshP/nvim-navic' },
       })
       lspconfig.gopls.setup(cfg)
       lspconfig.graphql.setup({
