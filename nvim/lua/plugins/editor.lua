@@ -1,5 +1,11 @@
 return {
   {
+    'stevearc/oil.nvim',
+    opts = {},
+    -- Optional dependencies
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+  },
+  {
     "nvim-tree/nvim-tree.lua",
     dependencies = {
       "nvim-tree/nvim-web-devicons"
@@ -48,13 +54,6 @@ return {
     end,
   },
   {
-    "echasnovski/mini.pairs",
-    event = "VeryLazy",
-    config = function(_, opts)
-      require("mini.pairs").setup(opts)
-    end,
-  },
-  {
     "echasnovski/mini.surround",
     keys = function(plugin, keys)
       -- Populate the keys based on the user's options
@@ -88,31 +87,6 @@ return {
   },
   { "JoosepAlviste/nvim-ts-context-commentstring", lazy = true },
   {
-    "echasnovski/mini.comment",
-    event = "VeryLazy",
-    opts = {
-      mappings = {
-        comment = 'gc',
-        comment_line = 'gcc',
-        textobject = 'gc',
-      },
-    },
-    config = function(_, opts)
-      require("mini.comment").setup(opts)
-    end,
-    keys = {
-      {
-        "<leader>/",
-        function()
-          local line_number = vim.api.nvim_win_get_cursor(0)[1]
-          require("mini.comment").toggle_lines(line_number, line_number)
-        end,
-        mode = "n",
-        desc = "Comment line"
-      }
-    }
-  },
-  {
     "windwp/nvim-spectre",
     config = function()
       require("spectre").setup()
@@ -131,5 +105,10 @@ return {
         max_join_length = 5000
       })
     end,
+  },
+  {
+    'altermo/ultimate-autopair.nvim',
+    event = { 'InsertEnter', 'CmdlineEnter' },
+    branch = 'v0.6', --recommended as each new version will have breaking changes
   }
 }

@@ -1,184 +1,137 @@
 return {
   {
-    "folke/neodev.nvim",
-    config = true,
+    "folke/lazydev.nvim",
+    ft = "lua", -- only load on lua files
+    opts = {
+      library = {
+        -- See the configuration section for more details
+        -- Load luvit types when the `vim.uv` word is found
+        { path = "luvit-meta/library", words = { "vim%.uv" } },
+      },
+    },
+  },
+  { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
+  { 'SmiteshP/nvim-navic' },
+
+  {
+    'neovim/nvim-lspconfig',
+    config = function()
+      local cfg = require 'go.lsp'.config() -- config() return the go.nvim gopls setup
+      table.insert(cfg, { inlay_hints = true })
+      local lspconfig = require('lspconfig')
+      lspconfig.lua_ls.setup({
+        settings = {
+          Lua = {
+            hint = {
+              enable = true, -- necessary
+            }
+          }
+        }
+        --       { 'SmiteshP/nvim-navic' },
+      })
+      lspconfig.gopls.setup(cfg)
+      lspconfig.graphql.setup({
+        filetypes = { "graphql", "javascript", "typescript", "javascriptreact", "typescriptreact" },
+      })
+      lspconfig.golangci_lint_ls.setup({})
+      lspconfig.grammarly.setup({})
+      lspconfig.ruby_lsp.setup({
+        init_options = {
+          enabledFeatures = {
+            codeActions = true,
+            codeLens = true,
+            completion = true,
+            definition = true,
+            diagnostics = true,
+            documentHighlights = true,
+            documentLink = true,
+            documentSymbols = true,
+            foldingRanges = true,
+            formatting = true,
+            hover = true,
+            inlayHint = true,
+            onTypeFormatting = true,
+            selectionRanges = true,
+            semanticHighlighting = true,
+            signatureHelp = true,
+            typeHierarchy = true,
+            workspaceSymbol = true
+          },
+          featuresConfiguration = {
+            inlayHint = {
+              implicitHashValue = true,
+              implicitRescue = true
+            }
+          },
+          experimentalFeaturesEnabled = false,
+          linters = { "rubocop" },
+          formatters = { "rubocop" },
+        }
+      })
+    end,
   },
   {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v1.x',
+    'hrsh7th/nvim-cmp',
     dependencies = {
-      -- LSP Support
-      { 'neovim/nvim-lspconfig' },             -- Required
-      { 'williamboman/mason.nvim' },           -- Optional
-      { 'williamboman/mason-lspconfig.nvim' }, -- Optional
-      { 'SmiteshP/nvim-navic' },
-      { 'b0o/schemastore.nvim' },
-
-      -- Autocompletion
-      { 'hrsh7th/nvim-cmp' },         -- Required
-      { 'hrsh7th/cmp-nvim-lsp' },     -- Required
-      { 'hrsh7th/cmp-buffer' },       -- Optional
-      { 'hrsh7th/cmp-path' },         -- Optional
-      { 'saadparwaiz1/cmp_luasnip' }, -- Optional
-      { 'hrsh7th/cmp-nvim-lua' },     -- Optional
-      { "supermaven-inc/supermaven-nvim" },
-
-      -- Snippets
-      { 'L3MON4D3/LuaSnip' },             -- Required
-      { 'rafamadriz/friendly-snippets' }, -- Optional
+      { 'hrsh7th/cmp-nvim-lsp' },
+      { 'hrsh7th/cmp-buffer' }, -- Optional
+      { 'hrsh7th/cmp-path' },   -- Optional
+      { 'L3MON4D3/LuaSnip' },
+      { 'saadparwaiz1/cmp_luasnip' },
+      { 'rafamadriz/friendly-snippets' },
     },
     config = function()
-      require("supermaven-nvim").setup({
-        ignore_filetypes = { cpp = true },
-        disable_inline_completion = true, -- disables inline completion for use with cmp
-        disable_keymaps = true -- disables built in keymaps for more manual control
-      })
-
-      local lsp = require('lsp-zero').preset({
-        name = 'minimal',
-        set_lsp_keymaps = { preserve_mappings = false },
-        manage_nvim_cmp = true,
-        suggest_lsp_servers = false,
-      })
-
-      -- (Optional) Configure lua language server for neovim
-      lsp.nvim_workspace()
-
-      lsp.format_on_save({
-        format_opts = {
-          async = true,
-          timeout_ms = 10000,
-        },
-        servers = {
-          ['lua_ls'] = { 'lua' },
-          ['rubocop'] = { 'ruby' },
-        }
-      })
-
-      lsp.on_attach(function(client, bufnr)
-        if client.server_capabilities.documentSymbolProvider then
-          require("nvim-navic").attach(client, bufnr)
-        end
-      end)
-
-      lsp.configure("rubocop", {
-        cmd = { "rvm", ".", "do", "rubocop", "--lsp" }
-      })
-      lsp.configure("solargraph", {
-        cmd = { "rvm", ".", "do", "solargraph", "stdio" },
-        settings = {
-          solargraph = {
-            diagnostics = false,
-            format = false,
-            autoformat = false,
-            formatting = false,
-          },
-        },
-        init_options = {
-          diagnostics = false,
-          format = false,
-          autoformat = false,
-          formatting = false,
-        },
-      })
-
-      lsp.setup_servers({
-        "grammarly",
-        "solargraph",
-        "rubocop",
-        force = true,
-      })
-
-      local schemastore = require('schemastore')
-      local lspconfig = require('lspconfig')
-      lspconfig.jsonls.setup({
-        settings = {
-          json = {
-            schemas = schemastore.json.schemas {
-              extra = {
-                {
-                  description = 'OpenAPI Qonto',
-                  fileMatch = 'openapi*.yml',
-                  name = 'openapi.json',
-                  url = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json",
-                  versions = {
-                    ["3.0"] = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.json",
-                    ["3.1"] = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"
-                  }
-                },
-                {
-                  description = 'Docker Compose Qonto',
-                  fileMatch = { 'qonto-env-compose.yml', 'qonto-env-compose.yaml' },
-                  name = 'docker-compose.yml',
-                  url = 'https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json',
-                },
-              }
-            },
-            validate = { enable = true },
-          },
-        },
-      })
-      lspconfig.yamlls.setup({
-        settings = {
-          yaml = {
-            schemaStore = {
-              -- You must disable built-in schemaStore support if you want to use
-              -- this plugin and its advanced options like `ignore`.
-              enable = false,
-            },
-            schemas = schemastore.yaml.schemas {
-              extra = {
-                {
-                  description = 'OpenAPI Qonto',
-                  fileMatch = 'openapi*.yml',
-                  name = 'openapi.json',
-                  url = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json",
-                  versions = {
-                    ["3.0"] = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.json",
-                    ["3.1"] = "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"
-                  }
-                },
-                {
-                  description = 'Docker Compose Qonto',
-                  fileMatch = { 'qonto-env-compose.yml', 'qonto-env-compose.yaml' },
-                  name = 'docker-compose.yml',
-                  url = 'https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json',
-                },
-              }
-            },
-          },
-        },
-      })
-
-      lsp.setup_nvim_cmp({
-        sources = {
-          { name = 'path' },
-          { name = 'luasnip',  keyword_length = 2 },
-          { name = 'supermaven' },
-          { name = 'nvim_lsp', keyword_length = 1 },
-          { name = 'buffer',   keyword_length = 2 },
-        }
-      })
-
-      vim.diagnostic.config({
-        virtual_text = true,
-        signs = true,
-        update_in_insert = false,
-        underline = true,
-        severity_sort = false,
-        float = true,
-      })
-
       local cmp = require('cmp')
-      local cmp_action = require('lsp-zero').cmp_action()
-      cmp.setup({
-        mapping = {
-          ['<Tab>'] = cmp_action.luasnip_supertab(),
-          ['<S-Tab>'] = cmp_action.luasnip_shift_supertab(),
-        }
-      })
+      require('luasnip.loaders.from_vscode').lazy_load()
 
-      lsp.setup()
+
+      cmp.setup({
+        sources = {
+          { name = "lazydev" },
+          { name = 'nvim_lsp',  keyword_length = 1 },
+          { name = 'luasnip',   keyword_length = 2 },
+          { name = 'supermaven' },
+          { name = 'path' },
+          { name = 'buffer',    keyword_length = 2 },
+        },
+        snippet = {
+          expand = function(args)
+            -- You need Neovim v0.10 to use vim.snippet
+            require('luasnip').lsp_expand(args.body)
+          end,
+        },
+        mapping = cmp.mapping.preset.insert({
+          ['<CR>'] = cmp.mapping.confirm({ select = false }),
+          -- Super tab
+          ['<Tab>'] = cmp.mapping(function(fallback)
+            local luasnip = require('luasnip')
+            local col = vim.fn.col('.') - 1
+
+            if cmp.visible() then
+              cmp.select_next_item({ behavior = 'select' })
+            elseif luasnip.expand_or_locally_jumpable() then
+              luasnip.expand_or_jump()
+            elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+              fallback()
+            else
+              cmp.complete()
+            end
+          end, { 'i', 's' }),
+
+          -- Super shift tab
+          ['<S-Tab>'] = cmp.mapping(function(fallback)
+            local luasnip = require('luasnip')
+
+            if cmp.visible() then
+              cmp.select_prev_item({ behavior = 'select' })
+            elseif luasnip.locally_jumpable(-1) then
+              luasnip.jump(-1)
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+        }),
+      })
     end,
   },
   {

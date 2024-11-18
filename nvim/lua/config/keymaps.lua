@@ -17,6 +17,10 @@ set("n", "<leader><leader>", telescope.resume, { desc = "Open Telescope", silent
 -- Nvim-tree
 set("n", "<leader>e", function() vim.cmd("NvimTreeFindFileToggle") end, { desc = "Open file browser", silent = true })
 
+-- oil.nvim
+set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
+
 -- Utility
 set("n", "H", ":BufferLineCyclePrev<cr>", { desc = "Previous buffer", silent = true })
 set("n", "L", ":BufferLineCycleNext<cr>", { desc = "Next buffer", silent = true })
@@ -73,3 +77,7 @@ set('n', 'K', function()
     vim.lsp.buf.hover()
   end
 end)
+
+-- Movement
+set('v', 'J', ":m '>+1<CR>gv=gv")
+set('v', 'K', ":m '<-2<CR>gv=gv")

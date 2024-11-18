@@ -77,11 +77,12 @@ return {
         dap_configurations = {
           {
             type = "go",
-            name = "Debug functional test (go.mod)",
+            name = "Test (Functional)",
             request = "launch",
+            program = "${file}",
             mode = "test",
-            program = "./${relativeFileDirname}",
-            args = { "-tags", "functional" }
+            buildFlags = "-tags=functional",
+            cwd = "./functionaltests",
           },
         },
       }
