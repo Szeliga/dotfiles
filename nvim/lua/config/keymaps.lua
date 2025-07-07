@@ -11,7 +11,11 @@ set("n", "<leader>fb", telescope.buffers, { desc = "Find buffers", silent = true
 set("n", "<leader>fm", telescope.marks, { desc = "Find marks", silent = true })
 set("n", "<leader>fq", telescope.quickfix, { desc = "Find quickfix items", silent = true })
 set("n", "<leader>fg", telescope.git_status, { desc = "Find modified git files", silent = true })
-set("n", "<leader>fd", telescope.lsp_document_symbols, { desc = "Show current file LSP symbols", silent = true })
+set("n", "<leader>fh", telescope.help_tags, { desc = "Find help tags", silent = true })
+
+set("n", "<leader>fls", telescope.lsp_document_symbols, { desc = "Show current file LSP symbols", silent = true })
+set("n", "<leader>fld", telescope.diagnostics, { desc = "Show diagnostics in workspace", silent = true })
+
 set("n", "<leader><leader>", telescope.resume, { desc = "Open Telescope", silent = true })
 
 -- Nvim-tree
@@ -39,6 +43,8 @@ set(
 set("n", "<leader>F", function() vim.cmd("LspZeroFormat") end, { desc = "Format current file using LSP", silent = true })
 set("t", "<ESC><ESC>", "<c-\\><c-n>", { desc = "Exit insert mode in terminal", silent = true })
 set("n", "<leader>j", treesj.toggle, { desc = "Split/Join object", silent = true })
+set("n", "<leader>o", function() vim.cmd("BufferLineCloseOthers") end,
+  { desc = "Close all buffer except current one", silent = true })
 
 -- Testing
 set("n", "<leader>tt", function() vim.cmd("TestLast") end, { desc = "Run last tests", silent = true })

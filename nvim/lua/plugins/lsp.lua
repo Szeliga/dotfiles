@@ -16,6 +16,7 @@ return {
   {
     'neovim/nvim-lspconfig',
     config = function()
+      -- local devenv = require("devenv")
       local cfg = require 'go.lsp'.config() -- config() return the go.nvim gopls setup
       table.insert(cfg, { inlay_hints = true })
       local lspconfig = require('lspconfig')
@@ -28,13 +29,27 @@ return {
           }
         }
       })
-      lspconfig.gopls.setup(cfg)
+      lspconfig.gopls.setup({
+        settings = {
+          gopls = {
+            env = { GOFLAGS = "-tags=functional" }
+          }
+        }
+      })
       lspconfig.graphql.setup({
         filetypes = { "graphql", "javascript", "typescript", "javascriptreact", "typescriptreact" },
       })
-      lspconfig.golangci_lint_ls.setup({})
+      -- lspconfig.marksman.setup({})
+      -- lspconfig.golangci_lint_ls.setup({})
       lspconfig.grammarly.setup({})
+      lspconfig.rubocop.setup({
+        cmd = { "/Users/szymon.szeliga.ext/.rvm/gems/ruby-3.3.6@global/wrappers/rubocop", "--lsp" }
+      })
+      -- lspconfig.steep.setup({})
+      lspconfig.jsonls.setup({})
+      lspconfig.yamlls.setup({})
       lspconfig.ruby_lsp.setup({
+        -- cmd = devenv.lsp_cmd({ "ruby-lsp" }),
         init_options = {
           enabledFeatures = {
             codeActions = true,
@@ -63,10 +78,13 @@ return {
             }
           },
           experimentalFeaturesEnabled = false,
-          linters = { "rubocop" },
-          formatters = { "rubocop" },
+          linters = { "" },
+          formatters = { "" },
         }
       })
+
+      -- lspconfig.protols.setup({})
+      lspconfig.buf_ls.setup({})
     end,
   },
   {
@@ -86,12 +104,12 @@ return {
 
       cmp.setup({
         sources = {
+          { name = 'supermaven', keyword_length = 0 },
           { name = "lazydev" },
-          { name = 'nvim_lsp',  keyword_length = 1 },
-          { name = 'luasnip',   keyword_length = 2 },
-          { name = 'supermaven' },
+          { name = 'nvim_lsp',   keyword_length = 1 },
+          { name = 'luasnip',    keyword_length = 2 },
           { name = 'path' },
-          { name = 'buffer',    keyword_length = 2 },
+          { name = 'buffer',     keyword_length = 2 },
         },
         snippet = {
           expand = function(args)

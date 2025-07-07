@@ -85,11 +85,31 @@ return {
       require("mini.surround").setup(opts)
     end,
   },
-  { "JoosepAlviste/nvim-ts-context-commentstring", lazy = true },
+  {
+    "folke/ts-comments.nvim",
+    opts = {},
+    event = "VeryLazy",
+    opts = {
+      lang = {
+        plantuml = "' %s"
+      }
+    }
+  },
   {
     "windwp/nvim-spectre",
     config = function()
-      require("spectre").setup()
+      require("spectre").setup({
+        replace_engine = {
+          ["sed"] = {
+            cmd = "sed",
+            args = {
+              "-i",
+              "",
+              "-E",
+            },
+          },
+        },
+      })
     end
   },
   {

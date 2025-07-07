@@ -49,3 +49,5 @@ bin/project
 otel.dev.env
 .solargraph.yml
 .envrc
+backfills/
+.claude/

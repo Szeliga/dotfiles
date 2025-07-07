@@ -4,3 +4,9 @@ vim.filetype.add({
     puml = "plantuml",
   },
 })
+
+vim.filetype.add({
+  extension = {
+    gotmpl = 'gotmpl',
+  }
+})
