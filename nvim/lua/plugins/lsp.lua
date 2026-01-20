@@ -11,114 +11,41 @@ return {
     },
   },
   { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
+  { 'b0o/schemastore.nvim', lazy = true, version = false },
   { 'SmiteshP/nvim-navic' },
 
   {
-    'neovim/nvim-lspconfig',
+    -- Enable native LSP servers
+    name = "native-lsp-enable",
+    dir = vim.fn.stdpath("config"),
     config = function()
-      local cfg = require 'go.lsp'.config() -- config() return the go.nvim gopls setup
-      table.insert(cfg, { inlay_hints = true })
-      local lspconfig = require('lspconfig')
-      lspconfig.lua_ls.setup({
-        settings = {
-          Lua = {
-            hint = {
-              enable = true, -- necessary
-            }
-          }
-        }
-      })
-      lspconfig.gopls.setup({
-        settings = {
-          gopls = {
-            env = { GOFLAGS = "-tags=functional" }
-          }
-        }
-      })
-      lspconfig.graphql.setup({
-        filetypes = { "graphql", "javascript", "typescript", "javascriptreact", "typescriptreact" },
-      })
-      lspconfig.golangci_lint_ls.setup({})
-      lspconfig.harper_ls.setup({
-        settings = {
-          ["harper-ls"] = {
-            userDictPath = "~/.config/nvim/harper/dictionary.txt",
-            fileDictPath = "~/.config/nvim/harper/file_dictionaries",
-            linters = {
-              SpellCheck = true,
-              SpelledNumbers = false,
-              AnA = true,
-              SentenceCapitalization = true,
-              UnclosedQuotes = true,
-              WrongQuotes = false,
-              LongSentences = true,
-              RepeatedWords = true,
-              Spaces = true,
-              Matcher = true,
-              CorrectNumberSuffix = true
-            },
-            codeActions = {
-              ForceStable = false
-            },
-            markdown = {
-              IgnoreLinkTitle = false
-            },
-            diagnosticSeverity = "hint",
-            isolateEnglish = false,
-            dialect = "American",
-            maxFileLength = 120000,
-            ignoredLintsPath = "",
-            excludePatterns = {},
-          },
-        },
-      })
-      -- lspconfig.steep.setup({})
-      lspconfig.jsonls.setup({})
-      lspconfig.yamlls.setup({})
-      lspconfig.ruby_lsp.setup({
-        init_options = {
-          enabledFeatures = {
-            codeActions = true,
-            codeLens = true,
-            completion = true,
-            definition = true,
-            diagnostics = true,
-            documentHighlights = true,
-            documentLink = true,
-            documentSymbols = true,
-            foldingRanges = true,
-            formatting = true,
-            hover = true,
-            inlayHint = true,
-            onTypeFormatting = true,
-            selectionRanges = true,
-            semanticHighlighting = true,
-            signatureHelp = true,
-            typeHierarchy = true,
-            workspaceSymbol = true
-          },
-          featuresConfiguration = {
-            inlayHint = {
-              implicitHashValue = true,
-              implicitRescue = true
-            }
-          },
-          indexing = {
-            excludedPatterns = { "spec/**/*" },
-            excludedGems = { "rubocop", "rubocop-ast", "rubocop-rake", "rubocop-rspec", "rubocop-rails", "bullet" },
-            excludedMagicComments = { "compiled:true" }
-          },
-          experimentalFeaturesEnabled = true,
-          linters = { "" },
-          formatters = { "" },
-        }
-      })
-      lspconfig.rubocop.setup({})
+      -- Register configurations for each LSP server
+      local lsp_config_dir = vim.fn.stdpath("config") .. "/after/lsp"
+      local servers = {
+        'lua_ls',
+        'gopls',
+        'graphql',
+        'golangci_lint_ls',
+        'harper_ls',
+        'jsonls',
+        'yamlls',
+        'ruby_lsp',
+        'rubocop',
+        'protols',
+        'buf_ls',
+        'nil_ls',
+      }
 
-      lspconfig.protols.setup({})
-      lspconfig.buf_ls.setup({})
+      for _, server in ipairs(servers) do
+        local config_file = lsp_config_dir .. "/" .. server .. ".lua"
+        local ok, config = pcall(dofile, config_file)
+        if ok and config then
+          vim.lsp.config(server, config)
+        end
+      end
 
-      lspconfig.nil_ls.setup({})
+      -- Enable all LSP servers
+      vim.lsp.enable(servers)
     end,
   },
   {
@@ -127,41 +54,33 @@ return {
       { 'hrsh7th/cmp-nvim-lsp' },
       { 'hrsh7th/cmp-buffer' }, -- Optional
       { 'hrsh7th/cmp-path' },   -- Optional
-      { 'L3MON4D3/LuaSnip' },
-      { 'saadparwaiz1/cmp_luasnip' },
-      { 'rafamadriz/friendly-snippets' },
     },
     config = function()
       local cmp = require('cmp')
-      require('luasnip.loaders.from_vscode').lazy_load()
-
 
       cmp.setup({
         sources = {
           { name = 'supermaven', keyword_length = 0 },
           { name = "lazydev" },
           { name = 'nvim_lsp',   keyword_length = 1 },
-          { name = 'luasnip',    keyword_length = 2 },
           { name = 'path' },
           { name = 'buffer',     keyword_length = 2 },
         },
         snippet = {
           expand = function(args)
-            -- You need Neovim v0.10 to use vim.snippet
-            require('luasnip').lsp_expand(args.body)
+            vim.snippet.expand(args.body)
           end,
         },
         mapping = cmp.mapping.preset.insert({
           ['<CR>'] = cmp.mapping.confirm({ select = false }),
           -- Super tab
           ['<Tab>'] = cmp.mapping(function(fallback)
-            local luasnip = require('luasnip')
             local col = vim.fn.col('.') - 1
 
             if cmp.visible() then
               cmp.select_next_item({ behavior = 'select' })
-            elseif luasnip.expand_or_locally_jumpable() then
-              luasnip.expand_or_jump()
+            elseif vim.snippet.active({ direction = 1 }) then
+              vim.snippet.jump(1)
             elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
               fallback()
             else
@@ -171,12 +90,10 @@ return {
 
           -- Super shift tab
           ['<S-Tab>'] = cmp.mapping(function(fallback)
-            local luasnip = require('luasnip')
-
             if cmp.visible() then
               cmp.select_prev_item({ behavior = 'select' })
-            elseif luasnip.locally_jumpable(-1) then
-              luasnip.jump(-1)
+            elseif vim.snippet.active({ direction = -1 }) then
+              vim.snippet.jump(-1)
             else
               fallback()
             end

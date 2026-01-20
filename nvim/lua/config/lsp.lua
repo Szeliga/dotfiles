@@ -1,11 +1,9 @@
-local lspconfig_defaults = require('lspconfig').util.default_config
 local telescope = require("telescope.builtin")
 
-lspconfig_defaults.capabilities = vim.tbl_deep_extend(
-  'force',
-  lspconfig_defaults.capabilities,
-  require('cmp_nvim_lsp').default_capabilities()
-)
+-- Set default capabilities for all LSP servers
+vim.lsp.config('*', {
+  capabilities = require('cmp_nvim_lsp').default_capabilities()
+})
 
 vim.api.nvim_create_autocmd('LspAttach', {
   desc = "Enable inlay hints",
