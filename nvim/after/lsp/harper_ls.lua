@@ -1,4 +1,6 @@
 return {
+  cmd = { 'harper-ls', '--stdio' },
+  filetypes = { 'markdown', 'text', 'gitcommit' },
   settings = {
     ["harper-ls"] = {
       userDictPath = "~/.config/nvim/harper/dictionary.txt",

@@ -1,4 +1,6 @@
 return {
+  cmd = { 'ruby-lsp' },
+  filetypes = { 'ruby', 'eruby' },
   init_options = {
     enabledFeatures = {
       codeActions = true,

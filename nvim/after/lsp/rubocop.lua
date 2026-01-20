@@ -1,2 +1,5 @@
 -- Uses default settings, no special config needed
-return {}
+return {
+  cmd = { 'rubocop', '--lsp' },
+  filetypes = { 'ruby' },
+}

@@ -96,3 +96,39 @@ vim.diagnostic.config({
   severity_sort = false,
   float = true,
 })
+
+-- Add :LspInfo command for checking LSP status
+vim.api.nvim_create_user_command('LspInfo', function()
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+
+  if #clients == 0 then
+    print('No LSP clients attached to current buffer')
+    return
+  end
+
+  print('LSP clients attached to buffer ' .. vim.api.nvim_get_current_buf() .. ':')
+  for _, client in ipairs(clients) do
+    print(string.format('  - %s (id: %d)', client.name, client.id))
+    if client.root_dir then
+      print(string.format('    root_dir: %s', client.root_dir))
+    end
+  end
+
+  -- Also show all active clients globally
+  local all_clients = vim.lsp.get_clients()
+  if #all_clients > #clients then
+    print('\nOther active LSP clients:')
+    for _, client in ipairs(all_clients) do
+      local is_current = false
+      for _, c in ipairs(clients) do
+        if c.id == client.id then
+          is_current = true
+          break
+        end
+      end
+      if not is_current then
+        print(string.format('  - %s (id: %d)', client.name, client.id))
+      end
+    end
+  end
+end, { desc = 'Show LSP client information' })
