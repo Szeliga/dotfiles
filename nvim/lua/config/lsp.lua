@@ -1,5 +1,3 @@
-local telescope = require("telescope.builtin")
-
 -- Set default capabilities for all LSP servers
 vim.lsp.config('*', {
   capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -30,11 +28,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
     local opts = { buffer = event.buf }
 
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', 'gd', telescope.lsp_definitions, opts)
+    vim.keymap.set('n', 'gd', function() require('telescope.builtin').lsp_definitions() end, opts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gi', telescope.lsp_implementations, opts)
+    vim.keymap.set('n', 'gi', function() require('telescope.builtin').lsp_implementations() end, opts)
     vim.keymap.set('n', 'go', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', 'gr', telescope.lsp_references, opts)
+    vim.keymap.set('n', 'gr', function() require('telescope.builtin').lsp_references() end, opts)
     vim.keymap.set('n', 'gs', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('n', 'gl', vim.diagnostic.open_float, opts)
     vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, opts)
