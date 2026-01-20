@@ -21,8 +21,25 @@ return {
       }
 
       require("nvim-test.runners.rspec"):setup {
-        command = "bin/project bin/rspec"
+        command = "project bin/rspec"
       }
     end
+  },
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "olimorris/neotest-rspec",
+    },
+    config = function()
+      require("neotest").setup({
+        adapters = {
+          require("neotest-rspec"),
+        },
+      })
+    end,
   }
 }

@@ -2,13 +2,10 @@
   name = Szymon Szeliga
   email = szeliga.szymon@gmail.com
   config = szeliga.szymon@gmail.com
-  signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPVbttiqkGppBgnFBujHklHyQuWCJZYGk2HSoBeE0iXP
+  signingkey = ~/.ssh/private.pub
 
 [gpg]
   format = ssh
-
-[gpg "ssh"]
-  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
 
 [commit]
   gpgsign = true
@@ -28,6 +25,9 @@
   conflictstyle = diff3
   ff = only
   tool = vimdiff
+
+[diff]
+    external = difft
 
 [merge "railsschema"]
   name = newer Rails schema version

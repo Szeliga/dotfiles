@@ -51,3 +51,18 @@ otel.dev.env
 .envrc
 backfills/
 .claude/
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.*
+.env.dev
+secretspec.toml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+.claude/

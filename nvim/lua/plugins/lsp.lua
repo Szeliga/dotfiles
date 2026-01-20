@@ -16,7 +16,6 @@ return {
   {
     'neovim/nvim-lspconfig',
     config = function()
-      -- local devenv = require("devenv")
       local cfg = require 'go.lsp'.config() -- config() return the go.nvim gopls setup
       table.insert(cfg, { inlay_hints = true })
       local lspconfig = require('lspconfig')
@@ -39,17 +38,44 @@ return {
       lspconfig.graphql.setup({
         filetypes = { "graphql", "javascript", "typescript", "javascriptreact", "typescriptreact" },
       })
-      -- lspconfig.marksman.setup({})
-      -- lspconfig.golangci_lint_ls.setup({})
-      lspconfig.grammarly.setup({})
-      lspconfig.rubocop.setup({
-        cmd = { "/Users/szymon.szeliga.ext/.rvm/gems/ruby-3.3.6@global/wrappers/rubocop", "--lsp" }
+      lspconfig.golangci_lint_ls.setup({})
+      lspconfig.harper_ls.setup({
+        settings = {
+          ["harper-ls"] = {
+            userDictPath = "~/.config/nvim/harper/dictionary.txt",
+            fileDictPath = "~/.config/nvim/harper/file_dictionaries",
+            linters = {
+              SpellCheck = true,
+              SpelledNumbers = false,
+              AnA = true,
+              SentenceCapitalization = true,
+              UnclosedQuotes = true,
+              WrongQuotes = false,
+              LongSentences = true,
+              RepeatedWords = true,
+              Spaces = true,
+              Matcher = true,
+              CorrectNumberSuffix = true
+            },
+            codeActions = {
+              ForceStable = false
+            },
+            markdown = {
+              IgnoreLinkTitle = false
+            },
+            diagnosticSeverity = "hint",
+            isolateEnglish = false,
+            dialect = "American",
+            maxFileLength = 120000,
+            ignoredLintsPath = "",
+            excludePatterns = {},
+          },
+        },
       })
       -- lspconfig.steep.setup({})
       lspconfig.jsonls.setup({})
       lspconfig.yamlls.setup({})
       lspconfig.ruby_lsp.setup({
-        -- cmd = devenv.lsp_cmd({ "ruby-lsp" }),
         init_options = {
           enabledFeatures = {
             codeActions = true,
@@ -77,14 +103,22 @@ return {
               implicitRescue = true
             }
           },
-          experimentalFeaturesEnabled = false,
+          indexing = {
+            excludedPatterns = { "spec/**/*" },
+            excludedGems = { "rubocop", "rubocop-ast", "rubocop-rake", "rubocop-rspec", "rubocop-rails", "bullet" },
+            excludedMagicComments = { "compiled:true" }
+          },
+          experimentalFeaturesEnabled = true,
           linters = { "" },
           formatters = { "" },
         }
       })
+      lspconfig.rubocop.setup({})
 
-      -- lspconfig.protols.setup({})
+      lspconfig.protols.setup({})
       lspconfig.buf_ls.setup({})
+
+      lspconfig.nil_ls.setup({})
     end,
   },
   {

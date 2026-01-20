@@ -61,12 +61,8 @@ return {
             'encoding', 'fileformat', 'filetype'
           },
           lualine_y = {
-            {
-              require("lazy.status").updates,
-              cond = require("lazy.status").has_updates,
-              color = { fg = "#ff9e64" },
-            },
-            'progress'
+            "lsp_status",
+            'progress',
           },
           lualine_z = { 'location' }
         },
