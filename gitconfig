@@ -56,12 +56,20 @@
   required = true
 
 [fetch]
-	prune = true
+  prune = true
 
 [include]
   path = ~/.config/dotfiles/extras/git/config
+
+[url "github-work:qonto-private/"]
+  insteadOf = git@github.com:qonto-private/
+[url "github-work:qonto-private/"]
+  insteadOf = https://github.com/qonto-private/
+[url "github-work:qonto-private/"]
+  insteadOf = ssh://git@github.com/qonto-private/
+
 [init]
-	defaultBranch = master
+  defaultBranch = master
 
 [oh-my-zsh]
   hide-status = 1
