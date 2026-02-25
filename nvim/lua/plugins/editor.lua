@@ -99,15 +99,11 @@ return {
     "windwp/nvim-spectre",
     config = function()
       require("spectre").setup({
-        replace_engine = {
-          ["sed"] = {
-            cmd = "sed",
-            args = {
-              "-i",
-              "",
-              "-E",
-            },
-          },
+        default = {
+          replace = {
+            --pick one of item in replace_engine
+            cmd = "sd"
+          }
         },
       })
     end
