@@ -11,59 +11,43 @@ return {
     end,
   },
   {
-    "greggh/claude-code.nvim",
+    "NickvanDyke/opencode.nvim",
     dependencies = {
-      "nvim-lua/plenary.nvim", -- Required for git operations
+      -- Recommended for `ask()` and `select()`.
+      -- Required for `snacks` provider.
+      ---@module 'snacks' <- Loads `snacks.nvim` types for configuration intellisense.
+      { "folke/snacks.nvim" },
     },
     config = function()
-      require("claude-code").setup(
-        {
-          -- Terminal window settings
-          window = {
-            split_ratio = 0.4,      -- Percentage of screen for the terminal window (height for horizontal, width for vertical splits)
-            position = "vertical",  -- Position of the window: "botright", "topleft", "vertical", "rightbelow vsplit", etc.
-            enter_insert = true,    -- Whether to enter insert mode when opening Claude Code
-            hide_numbers = true,    -- Hide line numbers in the terminal window
-            hide_signcolumn = true, -- Hide the sign column in the terminal window
-          },
-          -- File refresh settings
-          refresh = {
-            enable = true,             -- Enable file change detection
-            updatetime = 100,          -- updatetime when Claude Code is active (milliseconds)
-            timer_interval = 1000,     -- How often to check for file changes (milliseconds)
-            show_notifications = true, -- Show notification when files are reloaded
-          },
-          -- Git project settings
-          git = {
-            use_git_root = true, -- Set CWD to git root when opening Claude Code (if in git project)
-          },
-          -- Command settings
-          command = "claude", -- Command used to launch Claude Code
-          -- Command variants
-          command_variants = {
-            -- Conversation management
-            continue = "--continue", -- Resume the most recent conversation
-            resume = "--resume",     -- Display an interactive conversation picker
+      ---@type opencode.Opts
+      vim.g.opencode_opts = {
+        opencode_executable = "AWS_PROFILE= opencode",
+        -- Your configuration, if any — see `lua/opencode/config.lua`, or "goto definition" on the type or field.
+      }
 
-            -- Output options
-            verbose = "--verbose", -- Enable verbose logging with full turn-by-turn output
-          },
-          -- Keymaps
-          keymaps = {
-            toggle = {
-              normal = "<leader>aa",     -- Normal mode keymap for toggling Claude Code, false to disable
-              terminal = "<leader>aa",   -- Terminal mode keymap for toggling Claude Code, false to disable
-              variants = {
-                continue = "<leader>ac", -- Normal mode keymap for Claude Code with continue flag
-                verbose = "<leader>av",  -- Normal mode keymap for Claude Code with verbose flag
-                resume = "<leader>ar",   -- Normal mode keymap for Claude Code with resume flag
-              },
-            },
-            window_navigation = true, -- Enable window navigation keymaps (<C-h/j/k/l>)
-            scrolling = true,         -- Enable scrolling keymaps (<C-f/b>) for page up/down
-          }
-        }
-      )
-    end
+      -- Required for `opts.events.reload`.
+      vim.o.autoread = true
+
+      -- Recommended/example keymaps.
+      vim.keymap.set({ "n", "x" }, "<C-a>", function() require("opencode").ask("@this: ", { submit = true }) end,
+        { desc = "Ask opencode…" })
+      vim.keymap.set({ "n", "x" }, "<C-x>", function() require("opencode").select() end,
+        { desc = "Execute opencode action…" })
+      vim.keymap.set({ "n", "t" }, "<C-.>", function() require("opencode").toggle() end, { desc = "Toggle opencode" })
+
+      vim.keymap.set({ "n", "x" }, "go", function() return require("opencode").operator("@this ") end,
+        { desc = "Add range to opencode", expr = true })
+      vim.keymap.set("n", "goo", function() return require("opencode").operator("@this ") .. "_" end,
+        { desc = "Add line to opencode", expr = true })
+
+      vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,
+        { desc = "Scroll opencode up" })
+      vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end,
+        { desc = "Scroll opencode down" })
+
+      -- You may want these if you stick with the opinionated "<C-a>" and "<C-x>" above — otherwise consider "<leader>o…".
+      vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
+      vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
+    end,
   }
 }

@@ -88,3 +88,7 @@ end)
 -- Movement
 set('v', 'J', ":m '>+1<CR>gv=gv")
 set('v', 'K', ":m '<-2<CR>gv=gv")
+
+-- Git links
+set({'n', 'v'}, '<leader>go', function() Snacks.gitbrowse() end, { desc = 'Git Browse (open)' })
+set({'n', 'v'}, '<leader>gc', function() Snacks.gitbrowse({ open = function(url) vim.fn.setreg('+', url) end }) end, { desc = 'Git Browse (copy url)' })
