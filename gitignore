@@ -66,3 +66,6 @@ secretspec.toml
 .pre-commit-config.yaml
 
 .claude/
+.sisyphus/
+.opencode/
+
