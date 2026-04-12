@@ -1,5 +1,5 @@
 -- Uses default settings, will respect buf.yaml if present
 return {
-  cmd = { 'bufls', 'serve' },
+  cmd = { 'buf', 'lsp', 'serve' },
   filetypes = { 'proto' },
 }
