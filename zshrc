@@ -3,12 +3,14 @@ ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="agnoster"
 DISABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
-plugins=(git history history-substring-search cp kubectl docker ripgrep fd sudo zsh-interactive-cd)
+plugins=(git history history-substring-search cp kubectl docker sudo zsh-interactive-cd)
 export KEYTIMEOUT=1
+export LANG="en_GB.UTF-8"
 export LC_MONETARY="pl_PL.UTF-8"
 export LC_NUMERIC="pl_PL.UTF-8"
 export LC_TIME="pl_PL.UTF-8"
-export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
+export XDG_CONFIG_HOME="$HOME/.config"
+# export AWS_REGION="eu-west-2"
 
 # Better searching in command mode
 bindkey -M vicmd '?' history-incremental-search-backward
@@ -23,6 +25,7 @@ export FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/*' --smart-case"
 alias ts='tig status'
 alias gcob='git checkout $(git branch | fzf)'
 alias gdb='git branch -D $(git branch | fzf -m)'
+alias lg='lazygit'
 
 # Personal aliases
 alias ba='bin/app'
@@ -101,8 +104,7 @@ fi
 
 # RVM
 export GOPATH="$HOME/go"
-export PATH="$HOME/.rvm/bin:$PATH:$HOME/.local/bin:./bin:$HOME/Library/Python/3.7/bin:$GOPATH/bin"
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+export PATH="$PATH:$HOME/.local/bin:./bin:$HOME/Library/Python/3.7/bin:$GOPATH/bin"
 
 export CDPATH="$CDPATH:$HOME/work:$HOME/coding:$HOME/.config"
 
@@ -113,5 +115,26 @@ do
 done
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+# export SDKMAN_DIR="$HOME/.sdkman"
+# [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# pnpm
+export PNPM_HOME="/Users/szymon.szeliga.ext/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+#
+# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+# [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+# export PATH="$PATH:$HOME/.rvm/bin"
+
+eval "$(direnv hook zsh)"
+# zprof
+
+# opencode
+export PATH=/Users/szymon.szeliga.ext/.opencode/bin:$PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
