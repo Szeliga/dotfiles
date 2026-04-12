@@ -1,59 +1,66 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
+    lazy = false,
+    build = ":TSUpdate",
     config = function()
-      local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-      parser_config.plantuml = {
-        install_info = {
-          url = "https://github.com/Szeliga/tree-sitter-plantuml", -- local path or git repo
-          files = { "src/parser.c" },                              -- note that some parsers also require src/scanner.c or src/scanner.cc
-          branch = "master",
-        },
-        filetype = "plantuml", -- if filetype does not match the parser name
-      }
-      parser_config.gotmpl = {
-        install_info = {
-          url = "https://github.com/ngalaiko/tree-sitter-go-template",
-          files = { "src/parser.c" }
-        },
-        filetype = "gotmpl",
-        used_by = { "gohtmltmpl", "gotexttmpl", "gotmpl", "yaml" }
-      }
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TSUpdate",
+        callback = function()
+          require("nvim-treesitter.parsers").plantuml = {
+            tier = 2,
+            install_info = {
+              url = "https://github.com/Szeliga/tree-sitter-plantuml",
+              revision = "master",
+            },
+          }
+          require("nvim-treesitter.parsers").gotmpl = {
+            tier = 2,
+            install_info = {
+              url = "https://github.com/ngalaiko/tree-sitter-go-template",
+              revision = "main",
+            },
+          }
+        end,
+      })
 
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = {
-          "bash",
-          "diff",
-          "dockerfile",
-          "git_rebase",
-          "gitattributes",
-          "gitcommit",
-          "gitignore",
-          "go",
-          "gomod",
-          "gosum",
-          "graphql",
-          "json",
-          "lua",
-          "make",
-          "markdown",
-          "plantuml",
-          "regex",
-          "ruby",
-          "sql",
-          "terraform",
-          "vim",
-          "yaml",
-        },
-        sync_install = true,
-        auto_install = true,
-        highlight = {
-          enable = true,
-        },
+      vim.treesitter.language.register("gotmpl", { "gohtmltmpl", "gotexttmpl", "gotmpl", "yaml" })
+
+      require("nvim-treesitter").install({
+        "bash",
+        "diff",
+        "dockerfile",
+        "git_rebase",
+        "gitattributes",
+        "gitcommit",
+        "gitignore",
+        "go",
+        "gomod",
+        "gosum",
+        "graphql",
+        "json",
+        "lua",
+        "make",
+        "markdown",
+        "plantuml",
+        "regex",
+        "ruby",
+        "sql",
+        "terraform",
+        "vim",
+        "yaml",
+      })
+
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function(args)
+          local ft = args.match
+          local lang = vim.treesitter.language.get_lang(ft) or ft
+          local ok = pcall(vim.treesitter.language.inspect, lang)
+          if ok then
+            vim.treesitter.start()
+          end
+        end,
       })
     end,
   },
-  {
-    "nvim-treesitter/playground"
-  }
 }
