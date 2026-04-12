@@ -66,7 +66,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     -- make sure there is at least one client with formatting capabilities
-    if client.supports_method('textDocument/formatting') then
+    if client:supports_method('textDocument/formatting') then
       buffer_autoformat(event.buf)
     end
   end
