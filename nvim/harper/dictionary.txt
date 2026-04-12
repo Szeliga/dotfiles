@@ -4,6 +4,14 @@ BillingTransfer
 FX
 OrbStack
 Protobuf
-Qonto
 allowlist
 andon
+api
+enrichments
+firstparty
+graphql
+proto
+protobufs
+qonto
+sidekiq
+v8
