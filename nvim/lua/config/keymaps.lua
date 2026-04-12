@@ -48,10 +48,10 @@ set("n", "<leader>o", function() vim.cmd("BufferLineCloseOthers") end,
 set("n", "<leader>w", ":w<CR>", { desc = "Save current file", silent = true })
 
 -- Testing
-set("n", "<leader>tt", function() vim.cmd("TestLast") end, { desc = "Run last tests", silent = true })
-set("n", "<leader>tf", function() vim.cmd("TestFile") end, { desc = "Run current file tests", silent = true })
-set("n", "<leader>tn", function() vim.cmd("TestNearest") end, { desc = "Run nearest test", silent = true })
-set("n", "<leader>ts", function() vim.cmd("TestSuite") end, { desc = "Run suite tests", silent = true })
+-- set("n", "<leader>tt", function() vim.cmd("TestLast") end, { desc = "Run last tests", silent = true })
+-- set("n", "<leader>tf", function() vim.cmd("TestFile") end, { desc = "Run current file tests", silent = true })
+-- set("n", "<leader>tn", function() vim.cmd("TestNearest") end, { desc = "Run nearest test", silent = true })
+-- set("n", "<leader>ts", function() vim.cmd("TestSuite") end, { desc = "Run suite tests", silent = true })
 set("n", "gt", function() vim.cmd("Other") end, { desc = "Go to test/implementation", silent = true })
 
 -- Debugging
@@ -90,5 +90,6 @@ set('v', 'J', ":m '>+1<CR>gv=gv")
 set('v', 'K', ":m '<-2<CR>gv=gv")
 
 -- Git links
-set({'n', 'v'}, '<leader>go', function() Snacks.gitbrowse() end, { desc = 'Git Browse (open)' })
-set({'n', 'v'}, '<leader>gc', function() Snacks.gitbrowse({ open = function(url) vim.fn.setreg('+', url) end }) end, { desc = 'Git Browse (copy url)' })
+set({ 'n', 'v' }, '<leader>go', function() Snacks.gitbrowse() end, { desc = 'Git Browse (open)' })
+set({ 'n', 'v' }, '<leader>gc', function() Snacks.gitbrowse({ open = function(url) vim.fn.setreg('+', url) end }) end,
+  { desc = 'Git Browse (copy url)' })
