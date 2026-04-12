@@ -10,3 +10,9 @@ vim.filetype.add({
     gotmpl = 'gotmpl',
   }
 })
+
+vim.filetype.add({
+  pattern = {
+    ["*.go.golden"] = "go",
+  },
+})
