@@ -66,7 +66,7 @@ return {
 
           -- following are used for neovim < 0.10 which does not implement inlay hints
           -- hint style, set to 'eol' for end-of-line hints, 'inlay' for inline hints
-          style = 'inlay',
+          style = 'eol',
           -- Note: following setup only works for style = 'eol', you do not need to set it for 'inlay'
           -- Only show inlay hints for the current line
           only_current_line = true,
@@ -133,7 +133,7 @@ return {
         on_stderr = function(err, data) _, _ = err, data end,                        -- callback for stderr
         on_exit = function(code, signal, output) _, _, _ = code, signal, output end, -- callback for jobexit, output : string
         iferr_vertical_shift = 4,                                                    -- defines where the cursor will end up vertically from the begining of if err statement
-        iferr_less_highlight = true,
+        iferr_less_highlight = false,
       })
     end,
     event = { "CmdlineEnter" },
