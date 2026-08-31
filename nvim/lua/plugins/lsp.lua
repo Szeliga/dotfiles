@@ -34,6 +34,9 @@ return {
         'protols',
         'buf_ls',
         'nil_ls',
+        'ts_ls',
+        'tailwindcss',
+        'eslint',
       }
 
       for _, server in ipairs(servers) do

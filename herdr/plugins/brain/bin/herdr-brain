@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Launch opencode for the Herdr brain console, routed through Edgee.
+#
+# The toggle action owns the pane lifecycle. This script only starts opencode in
+# the brain directory. Herdr keeps the process alive as long as the pane exists,
+# so the toggle never closes the pane, it only moves it.
+set -euo pipefail
+
+BRAIN_DIR="${HERDR_BRAIN_DIR:-$HOME/brain}"
+
+die() {
+  echo "brain: $1" >&2
+  read -rsn1 -p "press any key to close"
+  exit 1
+}
+
+[[ -d "$BRAIN_DIR" ]] || die "brain dir not found: $BRAIN_DIR"
+
+EDGEE="${HERDR_BRAIN_EDGEE:-}"
+if [[ -z "$EDGEE" ]]; then
+  if command -v edgee >/dev/null 2>&1; then
+    EDGEE="$(command -v edgee)"
+  elif [[ -x /opt/homebrew/bin/edgee ]]; then
+    EDGEE=/opt/homebrew/bin/edgee
+  else
+    die "edgee not found on PATH"
+  fi
+fi
+
+cd "$BRAIN_DIR"
+exec "$EDGEE" launch opencode

@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# Pull-up console toggle for a single persistent opencode process in ~/brain.
+#
+# Herdr has no hide/show API, and closing a pane kills its child process. So the
+# toggle never closes the console. It moves the pane between a parked tab and the
+# current tab. `herdr pane move` keeps the child PID and the terminal buffer, so
+# opencode survives every toggle.
+#
+# The park tab holds only the console pane, so Herdr drops the tab as soon as the
+# pane moves out. Nothing lingers while the console is visible.
+set -euo pipefail
+
+PANE_LABEL="${HERDR_BRAIN_PANE_LABEL:-brain-console}"
+PARK_LABEL="${HERDR_BRAIN_PARK_LABEL:-brain-park}"
+SPLIT_RATIO="${HERDR_BRAIN_RATIO:-0.4}"
+
+api() { herdr "$@" 2>/dev/null; }
+
+# Same as api, but fail loudly. Herdr reports usage errors on stderr and API
+# errors as a JSON error object, so a silent call can hide a broken move.
+api_strict() {
+  local out
+  out="$(herdr "$@" 2>&1)" || { echo "brain: herdr $1 $2 failed: $out" >&2; exit 1; }
+  case "$out" in
+    *'"error"'*|usage:*) echo "brain: herdr $1 $2 rejected: $out" >&2; exit 1 ;;
+  esac
+  printf '%s' "$out"
+}
+
+# Print "<pane_id> <tab_id> <workspace_id>" for the console. Empty when absent.
+find_console() {
+  api pane list | python3 -c '
+import sys, json
+label = sys.argv[1]
+try:
+    panes = json.load(sys.stdin)["result"]["panes"]
+except Exception:
+    sys.exit(0)
+for p in panes:
+    if p.get("label") == label:
+        print(p["pane_id"], p["tab_id"], p["workspace_id"])
+        break
+' "$PANE_LABEL"
+}
+
+# Print the label of one tab. Empty when the tab is gone.
+tab_label() {
+  api tab list | python3 -c '
+import sys, json
+tab_id = sys.argv[1]
+try:
+    tabs = json.load(sys.stdin)["result"]["tabs"]
+except Exception:
+    sys.exit(0)
+for t in tabs:
+    if t.get("tab_id") == tab_id:
+        print(t.get("label") or "")
+        break
+' "$1"
+}
+
+current_tab() {
+  api pane current | python3 -c '
+import sys, json
+print(json.load(sys.stdin)["result"]["pane"]["tab_id"])
+'
+}
+
+# Spawn the console once, then label the pane so later toggles can find it.
+spawn_console() {
+  local pane
+  pane="$(api plugin pane open \
+    --plugin brain --entrypoint brain \
+    --placement tab --no-focus | python3 -c '
+import sys, json
+d = json.load(sys.stdin)
+if "error" in d:
+    sys.exit(1)
+print(d["result"]["plugin_pane"]["pane"]["pane_id"])
+')"
+  [[ -n "$pane" ]] || { echo "brain: spawn failed" >&2; exit 1; }
+  api pane rename "$pane" "$PANE_LABEL" >/dev/null
+  printf '%s' "$pane"
+}
+
+pull_down() {
+  api_strict pane move "$1" --tab "$(current_tab)" \
+    --split down --ratio "$SPLIT_RATIO" --focus >/dev/null
+}
+
+# Park the console in its own tab, inside the workspace it already occupies.
+# Herdr removes the tab once the pane moves back out.
+#
+# Note: with --new-tab the tab label flag is --label. Only --new-workspace takes
+# --tab-label. Passing the wrong one makes Herdr print usage and change nothing.
+pull_up() {
+  api_strict pane move "$1" --new-tab --workspace "$2" \
+    --label "$PARK_LABEL" --no-focus >/dev/null
+}
+
+main() {
+  local found pane tab ws
+
+  found="$(find_console)"
+  if [[ -z "$found" ]]; then
+    pull_down "$(spawn_console)"
+    return
+  fi
+
+  read -r pane tab ws <<<"$found"
+
+  if [[ "$(tab_label "$tab")" == "$PARK_LABEL" ]]; then
+    pull_down "$pane"
+  else
+    pull_up "$pane" "$ws"
+  fi
+}
+
+main "$@"

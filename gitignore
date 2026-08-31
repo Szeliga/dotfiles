@@ -68,4 +68,8 @@ secretspec.toml
 .claude/
 .sisyphus/
 .opencode/
+.slim/
 
+# graphify
+
+*graphify*

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Open the switcher popup pane.
+set -euo pipefail
+
+herdr plugin pane open --plugin switcher --entrypoint switcher --focus

@@ -1,0 +1,22 @@
+id = "brain"
+name = "Brain"
+version = "0.4.0"
+min_herdr_version = "0.7.5"
+description = "Persistent opencode console in ~/brain, toggled in and out of the current tab."
+platforms = ["macos", "linux"]
+
+# The toggle action owns the lifecycle. It never closes the pane, because Herdr
+# kills a pane's child process on close. Instead it moves the pane between a
+# parked tab and the current tab. `herdr pane move` keeps the child PID and the
+# terminal buffer, so opencode survives every toggle.
+[[actions]]
+id = "toggle"
+title = "Brain: toggle console"
+contexts = ["workspace", "global"]
+command = ["./bin/herdr-brain-toggle"]
+
+[[panes]]
+id = "brain"
+title = "Brain"
+command = ["./bin/herdr-brain"]
+placement = "tab"

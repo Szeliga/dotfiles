@@ -1,0 +1,437 @@
+#!/usr/bin/env bash
+# Switcher popup pane — fzf fuzzy switcher for workspaces, tabs, and panes.
+#
+# Reads the herdr snapshot once, fetches process info for every pane via the
+# socket API, builds an indented tree (workspace → tab → pane), and opens fzf.
+# Closes the popup pane on exit (selection or Esc/ctrl-c).
+#
+# Environment variables:
+#   HERDR_SWITCHER_FZF   override fzf binary path (default: fzf)
+#   HERDR_SOCKET_PATH    set by herdr for all plugin panes
+#   HERDR_PANE_ID        set by herdr for all plugin panes
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+FZF="${HERDR_SWITCHER_FZF:-fzf}"
+
+die() {
+  echo "switcher: $*" >&2
+  read -rsn1 -p "press any key to close" || true
+  exit 1
+}
+
+close_pane() {
+  herdr plugin pane close "${HERDR_PANE_ID:-}" 2>/dev/null || true
+}
+
+# Always close the popup on exit.
+trap close_pane EXIT
+
+# ---------------------------------------------------------------------------
+# Verify fzf
+# ---------------------------------------------------------------------------
+
+if ! command -v "${FZF}" >/dev/null 2>&1; then
+  die "fzf not found. Install fzf or set HERDR_SWITCHER_FZF to its path."
+fi
+
+# ---------------------------------------------------------------------------
+# Fetch snapshot
+# ---------------------------------------------------------------------------
+
+snapshot_json="$(herdr api snapshot)"
+
+# ---------------------------------------------------------------------------
+# Build the indented tree (snapshot + process info)
+# ---------------------------------------------------------------------------
+# Output format per line: <kind>\t<id>\t<display>
+# fzf matches on field 3 via --with-nth=3.
+# Ancestor names appended dim (ANSI \033[2m...\033[0m) so parent-name
+# searches (e.g. "search-gateway") match descendant lines.
+# --no-sort preserves tree order after filtering.
+
+list="$(python3 - "${snapshot_json}" "${HERDR_SOCKET_PATH:-${HOME}/.config/herdr/herdr.sock}" <<'PYEOF'
+import sys
+import json
+import os
+import socket as sock_mod
+
+raw       = sys.argv[1]
+sock_path = sys.argv[2]
+
+try:
+    snap = json.loads(raw)["result"]["snapshot"]
+except Exception as e:
+    sys.exit(f"switcher: cannot parse snapshot: {e}")
+
+focused_ws   = snap.get("focused_workspace_id", "")
+focused_tab  = snap.get("focused_tab_id", "")
+focused_pane = snap.get("focused_pane_id", "")
+
+workspaces = snap.get("workspaces", [])
+tabs       = snap.get("tabs", [])
+panes      = snap.get("panes", [])
+
+ws_by_id  = {w["workspace_id"]: w for w in workspaces}
+tab_by_id = {t["tab_id"]: t for t in tabs}
+
+def ws_label(ws_id):
+    w = ws_by_id.get(ws_id, {})
+    return w.get("label") or ws_id
+
+def tab_label_str(tab_id):
+    t = tab_by_id.get(tab_id, {})
+    return t.get("label") or tab_id
+
+def agent_suffix(status):
+    if not status or status in ("unknown", "idle", ""):
+        return ""
+    return f" [{status}]"
+
+def short_cwd(cwd):
+    home = os.environ.get("HOME", "")
+    if home and cwd.startswith(home):
+        return "~" + cwd[len(home):]
+    return cwd
+
+DIM   = "\033[2m"
+RESET = "\033[0m"
+
+def dim(text):
+    return f"{DIM}{text}{RESET}"
+
+# ---------------------------------------------------------------------------
+# Fetch process info for every pane via the socket API.
+# The socket accepts ONE request per connection — open a fresh one each time.
+# ---------------------------------------------------------------------------
+
+# Wrapper names to skip when picking the root-most non-wrapper process.
+# A leading '-' (login shell marker) is also stripped for comparison.
+WRAPPERS = frozenset(
+    "zsh bash sh fish login node bun deno python python3 ruby edgee tmux".split()
+)
+
+def _socket_call(method, params):
+    """Send one JSON-RPC request; return the parsed response dict."""
+    req = json.dumps({"id": "sw", "method": method, "params": params}) + "\n"
+    conn = sock_mod.socket(sock_mod.AF_UNIX, sock_mod.SOCK_STREAM)
+    conn.settimeout(5)
+    conn.connect(sock_path)
+    conn.sendall(req.encode())
+    resp = json.loads(conn.makefile().readline())
+    conn.close()
+    return resp
+
+def _process_label(process_info):
+    """
+    Return the display string for a pane given its process_info dict.
+    Rules:
+      1. shell_pid == fg_pgid → idle pane → 'zsh' marker.
+      2. Iterate foreground_processes from END (root-most first).
+         Take first entry whose name (minus leading '-') is NOT in WRAPPERS.
+      3. If all are wrappers, fall back to root process.
+      Display: cmdline when it has spaces or does not start with '/' (i.e.
+      adds real info over the bare binary path); else argv0 / name.
+    """
+    shell_pid = process_info.get("shell_pid")
+    fg_pgid   = process_info.get("foreground_process_group_id")
+    procs     = process_info.get("foreground_processes", [])
+
+    if shell_pid and fg_pgid and shell_pid == fg_pgid:
+        return "zsh"
+
+    if not procs:
+        return ""
+
+    def display_of(p):
+        cmdline = p.get("cmdline") or ""
+        if cmdline and (" " in cmdline or not cmdline.startswith("/")):
+            return cmdline
+        return p.get("argv0") or p.get("name") or cmdline or ""
+
+    chosen = None
+    for p in reversed(procs):
+        name = (p.get("name") or "").lstrip("-")
+        if name not in WRAPPERS:
+            chosen = p
+            break
+
+    if chosen is None:
+        chosen = procs[-1]
+
+    return display_of(chosen)
+
+def fetch_process_label(pane_id):
+    """Return process label for a pane; empty string on any failure."""
+    try:
+        resp = _socket_call("pane.process_info", {"pane_id": pane_id})
+        if "error" in resp:
+            return ""
+        return _process_label(resp["result"]["process_info"])
+    except Exception:
+        return ""
+
+# Fetch process labels for all panes sequentially.
+pane_process = {}
+for p in panes:
+    pid = p["pane_id"]
+    pane_process[pid] = fetch_process_label(pid)
+
+# ---------------------------------------------------------------------------
+# Build per-tab process summary used for TAB lines.
+# ---------------------------------------------------------------------------
+
+def tab_process_summary(tab_id):
+    """
+    One-pane tab  → that pane's process string.
+    Multi-pane    → distinct process strings joined with ', ' (first-seen order).
+    All-idle      → 'zsh' marker.
+    """
+    tab_panes = [p for p in panes if p.get("tab_id") == tab_id]
+    seen = []
+    for p in sorted(tab_panes, key=lambda x: x.get("pane_id", "")):
+        label = pane_process.get(p["pane_id"], "")
+        if label and label not in seen:
+            seen.append(label)
+    if not seen:
+        return "zsh"
+    return ", ".join(seen)
+
+# ---------------------------------------------------------------------------
+# Layout constants.
+# Indentation: WS=0, TAB=2, PANE=4 spaces.
+# Process/cwd columns start at a fixed offset wide enough for the deepest
+# indent. We target col 44 measured from after the star+indent prefix.
+# WS  label:  0 indent + 2 (star) = starts at 2, pad to COL_W chars → col 2+COL_W
+# TAB label:  2 indent + 2 (star) = starts at 4, same pad
+# PANE label: 4 indent + 2 (star) = starts at 6, same pad
+# We pick COL_W = 38 so that col 2+38=40 is the annotation start for all rows.
+# ---------------------------------------------------------------------------
+
+COL_W = 38   # visible label field width (excludes indent and star)
+
+# ---------------------------------------------------------------------------
+# Build the indented tree.
+# ---------------------------------------------------------------------------
+
+lines = []
+
+# Index tabs and panes by parent for fast lookup.
+tabs_by_ws  = {}
+for t in tabs:
+    wid = t.get("workspace_id", "__orphan__")
+    tabs_by_ws.setdefault(wid, []).append(t)
+
+panes_by_tab = {}
+for p in panes:
+    tid = p.get("tab_id", "__orphan__")
+    panes_by_tab.setdefault(tid, []).append(p)
+
+# Track emitted tab/pane ids to detect orphans later.
+emitted_tabs  = set()
+emitted_panes = set()
+
+for w in sorted(workspaces, key=lambda x: x.get("number", 0)):
+    ws_id  = w["workspace_id"]
+    wlabel = w.get("label") or ws_id
+    star   = "* " if ws_id == focused_ws else "  "
+    status = agent_suffix(w.get("agent_status", ""))
+    # WS line: label padded to COL_W, then tab/pane counts, then agent status.
+    tab_count  = w.get("tab_count", 0)
+    pane_count = w.get("pane_count", 0)
+    ws_display = (
+        f"{star}{wlabel:<{COL_W}}"
+        f"  {tab_count}t {pane_count}p"
+        f"{status}"
+    )
+    lines.append(f"workspace\t{ws_id}\t{ws_display}")
+
+    for t in sorted(tabs_by_ws.get(ws_id, []), key=lambda x: x.get("number", 0)):
+        tab_id  = t["tab_id"]
+        tlabel  = t.get("label") or tab_id
+        tstar   = "* " if tab_id == focused_tab else "  "
+        tstatus = agent_suffix(t.get("agent_status", ""))
+        proc    = tab_process_summary(tab_id)
+        # TAB line: 2-space indent + star + label + dim ws ancestor + proc.
+        tab_display = (
+            f"  {tstar}{tlabel:<{COL_W}}"
+            f"{tstatus}  {proc}"
+            f"  {dim(wlabel)}"
+        )
+        lines.append(f"tab\t{tab_id}\t{tab_display}")
+        emitted_tabs.add(tab_id)
+
+        for p in sorted(panes_by_tab.get(tab_id, []), key=lambda x: x.get("pane_id", "")):
+            pane_id = p["pane_id"]
+            cwd     = short_cwd(p.get("foreground_cwd") or p.get("cwd") or "")
+            pstatus = agent_suffix(p.get("agent_status", ""))
+            proc    = pane_process.get(pane_id, "")
+            pstar   = "* " if pane_id == focused_pane else "  "
+            # PANE line: 4-space indent + star + pane_id (compact) + cwd + proc.
+            # pane_id is the leading visible token so duplicates are distinguishable.
+            pane_display = (
+                f"    {pstar}{pane_id:<{COL_W}}"
+                f"  {cwd}  {proc}"
+                f"{pstatus}"
+                f"  {dim(wlabel + ' ' + tlabel)}"
+            )
+            lines.append(f"pane\t{pane_id}\t{pane_display}")
+            emitted_panes.add(pane_id)
+
+# ---------------------------------------------------------------------------
+# Orphan safety — emit any tabs/panes not yet emitted.
+# ---------------------------------------------------------------------------
+
+orphan_tabs  = [t for t in tabs  if t["tab_id"]   not in emitted_tabs]
+orphan_panes = [p for p in panes if p["pane_id"]  not in emitted_panes]
+
+if orphan_tabs or orphan_panes:
+    # Synthetic group header.
+    lines.append(f"workspace\t__orphan__\t  {'(orphaned)':>{COL_W}}")
+
+    # Index orphan panes by their tab_id so we can nest them under orphan tabs.
+    orphan_panes_by_tab = {}
+    loose_panes = []
+    for p in orphan_panes:
+        tid = p.get("tab_id", "")
+        if tid in {t["tab_id"] for t in orphan_tabs}:
+            orphan_panes_by_tab.setdefault(tid, []).append(p)
+        else:
+            loose_panes.append(p)
+
+    for t in sorted(orphan_tabs, key=lambda x: x.get("tab_id", "")):
+        tab_id  = t["tab_id"]
+        tlabel  = t.get("label") or tab_id
+        tstar   = "* " if tab_id == focused_tab else "  "
+        tstatus = agent_suffix(t.get("agent_status", ""))
+        proc    = tab_process_summary(tab_id)
+        lines.append(f"tab\t{tab_id}\t  {tstar}{tlabel:<{COL_W}}{tstatus}  {proc}")
+        for p in sorted(orphan_panes_by_tab.get(tab_id, []), key=lambda x: x.get("pane_id", "")):
+            pane_id = p["pane_id"]
+            cwd     = short_cwd(p.get("foreground_cwd") or p.get("cwd") or "")
+            pstatus = agent_suffix(p.get("agent_status", ""))
+            proc    = pane_process.get(pane_id, "")
+            pstar   = "* " if pane_id == focused_pane else "  "
+            lines.append(f"pane\t{pane_id}\t    {pstar}{pane_id:<{COL_W}}  {cwd}  {proc}{pstatus}")
+
+    for p in sorted(loose_panes, key=lambda x: x.get("pane_id", "")):
+        pane_id = p["pane_id"]
+        cwd     = short_cwd(p.get("foreground_cwd") or p.get("cwd") or "")
+        pstatus = agent_suffix(p.get("agent_status", ""))
+        proc    = pane_process.get(pane_id, "")
+        pstar   = "* " if pane_id == focused_pane else "  "
+        lines.append(f"pane\t{pane_id}\t    {pstar}{pane_id:<{COL_W}}  {cwd}  {proc}{pstatus}")
+
+print("\n".join(lines))
+PYEOF
+)"
+
+if [[ -z "${list}" ]]; then
+  die "snapshot returned empty list."
+fi
+
+# ---------------------------------------------------------------------------
+# Run fzf
+# ---------------------------------------------------------------------------
+
+header="enter=focus  esc=cancel   tree order fixed  parent names searchable"
+
+selected="$(
+  printf '%s\n' "${list}" \
+    | "${FZF}" \
+        --ansi \
+        --no-sort \
+        --height=100% \
+        --layout=reverse \
+        --border=none \
+        --prompt='switch > ' \
+        --info=inline \
+        --exit-0 \
+        --select-1 \
+        --delimiter=$'\t' \
+        --with-nth=3 \
+        --header="${header}" \
+  || true
+)"
+
+# Empty selection → Esc/ctrl-c. EXIT trap closes the pane.
+[[ -n "${selected}" ]] || exit 0
+
+# ---------------------------------------------------------------------------
+# Parse selection
+# ---------------------------------------------------------------------------
+
+kind="$(printf '%s' "${selected}" | cut -f1)"
+item_id="$(printf '%s' "${selected}" | cut -f2)"
+
+# ---------------------------------------------------------------------------
+# Focus the selected item
+# ---------------------------------------------------------------------------
+
+# Focus a pane by id. The CLI `herdr pane focus` only moves by direction, so
+# this talks to the socket API directly. python3 owns the whole exchange, which
+# keeps the plugin free of an `nc` dependency.
+focus_pane_via_socket() {
+  local pane_id="$1"
+  python3 - "${HERDR_SOCKET_PATH:-${HOME}/.config/herdr/herdr.sock}" "${pane_id}" <<'PYEOF' \
+    || die "pane.focus failed for ${pane_id}"
+import json
+import socket
+import sys
+
+sock_path, pane_id = sys.argv[1], sys.argv[2]
+
+req = {"id": "switcher-focus", "method": "pane.focus",
+       "params": {"pane_id": pane_id}}
+
+try:
+    conn = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    conn.settimeout(5)
+    conn.connect(sock_path)
+    conn.sendall((json.dumps(req) + "\n").encode())
+    resp = json.loads(conn.makefile().readline())
+    conn.close()
+except Exception as exc:
+    sys.exit(f"socket call failed: {exc}")
+
+if "error" in resp:
+    sys.exit(f"pane.focus rejected: {resp['error']}")
+PYEOF
+}
+
+case "${kind}" in
+  workspace)
+    herdr workspace focus "${item_id}"
+    ;;
+  tab)
+    # Derive workspace from the tab id (format: w<N>:t<M>).
+    ws_id="$(printf '%s' "${item_id}" | cut -d: -f1)"
+    herdr workspace focus "${ws_id}" 2>/dev/null || true
+    herdr tab focus "${item_id}"
+    ;;
+  pane)
+    # Derive workspace and tab from pane id using the snapshot.
+    ws_id="$(printf '%s' "${item_id}" | cut -d: -f1)"
+    tab_id="$(python3 - "${snapshot_json}" "${item_id}" <<'PYEOF'
+import sys, json
+snap = json.loads(sys.argv[1])["result"]["snapshot"]
+pane_id = sys.argv[2]
+for p in snap.get("panes", []):
+    if p["pane_id"] == pane_id:
+        print(p.get("tab_id", ""))
+        break
+PYEOF
+    )"
+    herdr workspace focus "${ws_id}" 2>/dev/null || true
+    [[ -n "${tab_id}" ]] && herdr tab focus "${tab_id}" 2>/dev/null || true
+    focus_pane_via_socket "${item_id}"
+    ;;
+  *)
+    die "unknown kind: ${kind}"
+    ;;
+esac
+
+# EXIT trap fires here and closes the pane.

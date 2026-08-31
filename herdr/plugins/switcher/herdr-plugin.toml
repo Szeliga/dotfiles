@@ -1,0 +1,20 @@
+id = "switcher"
+name = "Switcher"
+version = "0.3.0"
+min_herdr_version = "0.7.5"
+description = "fzf-based fuzzy switcher for workspaces, tabs, and panes."
+platforms = ["macos", "linux"]
+
+[[actions]]
+id = "open"
+title = "Switcher: open"
+contexts = ["workspace", "global"]
+command = ["./bin/herdr-switcher-open"]
+
+[[panes]]
+id = "switcher"
+title = "Switcher"
+command = ["./bin/herdr-switcher"]
+placement = "popup"
+width = "70%"
+height = "60%"

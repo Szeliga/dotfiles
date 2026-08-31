@@ -1,11 +1,11 @@
 hs.loadSpoon("ReloadConfiguration")
 spoon.ReloadConfiguration:start()
 
-hyper = {"option", "shift", "control", "command"}
+hyper = { "option", "shift", "control", "command" }
 
 -------- Window Sizing
 ---- Left 50%
-hs.hotkey.bind(hyper, "A", function()
+hs.hotkey.bind(hyper, "Right", function()
   local win = hs.window.focusedWindow()
   local f = win:frame()
   local screen = win:screen()
@@ -19,7 +19,7 @@ hs.hotkey.bind(hyper, "A", function()
 end)
 
 ---- Top 50%
-hs.hotkey.bind(hyper, "W", function()
+hs.hotkey.bind(hyper, "Up", function()
   local win = hs.window.focusedWindow()
   local f = win:frame()
   local screen = win:screen()
@@ -33,7 +33,7 @@ hs.hotkey.bind(hyper, "W", function()
 end)
 
 ---- Middle 80%
-hs.hotkey.bind(hyper, "S", function()
+hs.hotkey.bind(hyper, "\\", function()
   local win = hs.window.focusedWindow()
   local f = win:frame()
   local screen = win:screen()
@@ -47,7 +47,7 @@ hs.hotkey.bind(hyper, "S", function()
 end)
 
 ---- Right 50%
-hs.hotkey.bind(hyper, "D", function()
+hs.hotkey.bind(hyper, "Right", function()
   local win = hs.window.focusedWindow()
   local f = win:frame()
   local screen = win:screen()
@@ -61,7 +61,7 @@ hs.hotkey.bind(hyper, "D", function()
 end)
 
 ---- Bottom 50%
-hs.hotkey.bind(hyper, "X", function()
+hs.hotkey.bind(hyper, "Down", function()
   local win = hs.window.focusedWindow()
   local f = win:frame()
   local screen = win:screen()
@@ -75,7 +75,7 @@ hs.hotkey.bind(hyper, "X", function()
 end)
 
 ---- Fullscreen
-hs.hotkey.bind(hyper, "F", function()
+hs.hotkey.bind(hyper, "return", function()
   local win = hs.window.focusedWindow()
   local f = win:frame()
   local screen = win:screen()
@@ -88,39 +88,39 @@ hs.hotkey.bind(hyper, "F", function()
   win:setFrameInScreenBounds(f, 0)
 end)
 
--------- Window Movement
----- Move to left by 100
-hs.hotkey.bind(hyper, "H", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-
-  f.x = f.x - 100
-  win:setFrameInScreenBounds(f, 0)
-end)
-
----- Move to bottom by 100
-hs.hotkey.bind(hyper, "J", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-
-  f.y = f.y + 100
-  win:setFrameInScreenBounds(f, 0)
-end)
-
----- Move to top by 100
-hs.hotkey.bind(hyper, "K", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-
-  f.y = f.y - 100
-  win:setFrameInScreenBounds(f, 0)
-end)
-
----- Move to right by 100
-hs.hotkey.bind(hyper, "L", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-
-  f.x = f.x + 100
-  win:setFrameInScreenBounds(f, 0)
-end)
+----------- Window Movement
+------- Move to left by 100
+---hs.hotkey.bind(hyper, "H", function()
+---  local win = hs.window.focusedWindow()
+---  local f = win:frame()
+---
+---  f.x = f.x - 100
+---  win:setFrameInScreenBounds(f, 0)
+---end)
+---
+------- Move to bottom by 100
+---hs.hotkey.bind(hyper, "J", function()
+---  local win = hs.window.focusedWindow()
+---  local f = win:frame()
+---
+---  f.y = f.y + 100
+---  win:setFrameInScreenBounds(f, 0)
+---end)
+---
+------- Move to top by 100
+---hs.hotkey.bind(hyper, "K", function()
+---  local win = hs.window.focusedWindow()
+---  local f = win:frame()
+---
+---  f.y = f.y - 100
+---  win:setFrameInScreenBounds(f, 0)
+---end)
+---
+------- Move to right by 100
+---hs.hotkey.bind(hyper, "L", function()
+---  local win = hs.window.focusedWindow()
+---  local f = win:frame()
+---
+---  f.x = f.x + 100
+---  win:setFrameInScreenBounds(f, 0)
+---end)
